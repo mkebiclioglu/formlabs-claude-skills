@@ -1,0 +1,18 @@
+name: Feature request
+description: Suggest a new skill or workflow improvement
+labels: [enhancement]
+body:
+  - type: textarea
+    id: workflow
+    attributes:
+      label: What workflow are you trying to do?
+      description: Describe in plain language what you'd want to type at Claude Code.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed skill / behavior
+      description: New skill (with a name), or change to an existing one? Which MCP tools should it orchestrate?
+    validations:
+      required: true

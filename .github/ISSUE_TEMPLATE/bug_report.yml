@@ -1,0 +1,33 @@
+name: Bug report
+description: A skill behaved incorrectly or got stuck
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Which skill, what prompt did you give it, what did it do?
+    validations:
+      required: true
+  - type: textarea
+    id: transcript
+    attributes:
+      label: Relevant transcript
+      description: Paste the Claude Code chat (or the relevant slice). Redact anything sensitive.
+      render: text
+    validations:
+      required: true
+  - type: input
+    id: mcp-version
+    attributes:
+      label: formlabs-local-mcp version
+      placeholder: "0.1.1"
+    validations:
+      required: true
+  - type: input
+    id: client
+    attributes:
+      label: MCP client
+      placeholder: "Claude Code 1.2.3 / Claude Desktop / Cursor / ..."
+    validations:
+      required: true
