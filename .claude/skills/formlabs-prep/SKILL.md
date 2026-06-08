@@ -10,39 +10,54 @@ pipeline, but always saves a `.form` file at the end instead of sending to a
 printer. Use this when the user wants to inspect the job in PreForm first, or
 batch-prepare jobs to print later.
 
-## Required environment
+## Precondition (always)
 
-Same as `formlabs-print`: call `health_check` first. If it fails, tell the user
-how to install/start the MCP server and stop.
+**First action: call `health_check`.** If it errors, the `formlabs` MCP server
+is not installed or PreFormServer failed to start. Surface the error, link
+the user to https://github.com/mkebiclioglu/formlabs-local-mcp, and STOP.
 
 ## Required inputs
 
 1. **Model file(s)** — absolute paths.
-2. **Printer + material** — same as `formlabs-print`. If the user only says
-   something like "for the Form 4", call `list_materials` filtered by
-   `machine_type` and ask them to pick a material.
+2. **Printer + material** — same as `formlabs-print`. If the user names a
+   printer but no material, call `list_printer_types` to confirm the code,
+   then `list_materials` and surface the available materials for that printer
+   so they can pick.
 3. **Output `.form` path** — absolute path. If they don't specify, default to
    the model's directory with the same basename and `.form` extension, and
    confirm.
 
 ## Workflow
 
-1. `create_scene`
-2. `import_model` for each input file
-3. `auto_orient`
-4. `auto_support`
-5. `auto_layout` (SLA) or `auto_pack` (SLS)
-6. `get_print_validation` — surface errors/warnings
-7. `estimate_print_time` — report
-8. `save_form`
-9. Optionally `save_screenshot` next to the .form so the user has a preview
-
-Skip the confirmation step before `save_form` if the output path is new; ask
-before overwriting an existing file.
+1. `health_check` (precondition).
+2. `create_scene`.
+3. `import_model` for each input file. The server defaults `repair_behavior=REPAIR`
+   and `units=MILLIMETERS` — leave them unless the user explicitly says otherwise.
+4. `auto_orient`.
+5. `auto_support`.
+6. `auto_layout` (SLA, `machine_type` starts with `FORM-`) or `auto_pack`
+   (SLS, starts with `FS`).
+7. `get_print_validation` — surface errors/warnings.
+8. **Cup check (SLA only):** call `get_scene` and inspect each model for cups
+   / drain-hole warnings. If any are detected, tell the user and offer to
+   `add_drain_holes` before saving.
+9. `estimate_print_time` — report time and material usage.
+10. `save_form` to the chosen path. Skip the confirmation if the path is new;
+    ask before overwriting an existing file.
+11. Optionally `save_screenshot` to a `.png` next to the `.form` for preview.
 
 ## When to use this vs formlabs-print
 
-- The user mentions "save", "prepare", "set up", "draft", "preview" → this skill.
-- The user mentions "print", "send to printer", "kick off the job" → use
+- User mentions "save", "prepare", "set up", "draft", "preview" → this skill.
+- User mentions "print", "send to printer", "kick off the job" → use
   `formlabs-print`.
 - Ambiguous → ask once which they want.
+
+## Things to avoid
+
+- **Don't** use TaskCreate for this flow. Short linear pipeline; overhead.
+- **Don't** loop retries on `IMPORT_PRODUCED_EMPTY_SCENE` — that error means
+  the STL is genuinely malformed and the post-import verification caught it.
+  Tell the user, stop, and let them open the file in PreForm to diagnose.
+- **Don't** invent `machine_type` or `material_code` values. Use
+  `list_printer_types` / `list_materials` to get real values.
