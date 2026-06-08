@@ -23,55 +23,48 @@ doing anything irreversible.
 
 ## Install
 
-### 1. Install the MCP server
-
-```bash
-# Requires uv: https://docs.astral.sh/uv/getting-started/installation/
-uvx formlabs-local-mcp --help
-```
-
-(or `pip install formlabs-local-mcp` into a Python ≥3.10 environment.)
-
-### 2. Install PreFormServer
+### 1. Install PreFormServer
 
 Download the PreFormServer executable from the
 [Formlabs API downloads page](https://support.formlabs.com/s/article/Formlabs-API-downloads-and-release-notes)
-and note the absolute path to the binary.
+and note the absolute path to the binary, e.g.
+`/Applications/PreFormServer.app/Contents/MacOS/PreFormServer`.
+
+### 2. Install the MCP server
+
+Clone and install [`formlabs-local-mcp`](https://github.com/mkebiclioglu/formlabs-local-mcp):
+
+```bash
+git clone https://github.com/mkebiclioglu/formlabs-local-mcp.git
+cd formlabs-local-mcp
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+```
+
+The full setup (including MCP client config) lives in the MCP server's README.
 
 ### 3. Register the MCP server with Claude Code
 
-Add to your `.claude/mcp.json` (per project) or `~/.claude/mcp.json` (global):
-
-```json
-{
-  "mcpServers": {
-    "formlabs": {
-      "command": "uvx",
-      "args": ["formlabs-local-mcp"],
-      "env": {
-        "PREFORM_SERVER_PATH": "/Applications/PreFormServer.app/Contents/MacOS/PreFormServer"
-      }
-    }
-  }
-}
+```bash
+claude mcp add formlabs \
+  -s user \
+  -e PREFORM_SERVER_PATH=/path/to/PreFormServer.app/Contents/MacOS/PreFormServer \
+  -- /absolute/path/to/formlabs-local-mcp/.venv/bin/formlabs-local-mcp
 ```
+
+Verify with `claude mcp list` — you should see `formlabs: ✓ Connected`.
 
 ### 4. Drop in the skills
 
-Two options:
+```bash
+git clone https://github.com/mkebiclioglu/formlabs-claude-skills.git
+mkdir -p ~/.claude/skills
+cp -r formlabs-claude-skills/.claude/skills/* ~/.claude/skills/
+```
 
-- **Clone into a project.** From your project root:
-  ```bash
-  git clone https://github.com/mkebiclioglu/formlabs-claude-skills .formlabs-skills
-  cp -r .formlabs-skills/.claude/skills/* .claude/skills/
-  ```
-- **Install globally.**
-  ```bash
-  git clone https://github.com/mkebiclioglu/formlabs-claude-skills ~/.formlabs-skills
-  cp -r ~/.formlabs-skills/.claude/skills/* ~/.claude/skills/
-  ```
-
-Restart Claude Code. `/formlabs-print` and `/formlabs-prep` will be available.
+Start a fresh Claude Code window. `/formlabs-print` and `/formlabs-prep` will
+be available.
 
 ## Example prompts
 
