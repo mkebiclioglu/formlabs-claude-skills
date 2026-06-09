@@ -53,11 +53,14 @@ single question. Do not interrogate the user step by step.
    `machine_type` on the scene first.
 6. `get_print_validation`. If there are errors, surface them and stop.
    If there are warnings, surface them and ask whether to continue.
-7. **Check for resin cups (SLA only).** After `auto_support`, call `get_scene`
-   and look at each model's properties for a `cups` field (or similar — the
-   exact field varies by PreFormServer version). If any model has cups > 0,
-   warn the user: "N cup(s) detected — these are upward-facing concavities
-   that can trap uncured resin. Continue, or add drain holes first?"
+7. **Auto drain holes (SLA only).** After `auto_support`, call
+   `auto_add_drain_holes`. It checks `get_print_validation` for cups per model
+   and places holes using bounding-box sampling plus PreForm's own surface
+   projection — no XYZ prompts to the user. Surface the per-model summary
+   (`cups_detected`, `holes_requested`, warnings). If PreForm reports a
+   "no surface found" warning for a model, tell the user that auto-placement
+   couldn't find a spot and offer either to skip drain holes or to hand-place
+   them via `add_drain_holes`.
 8. `estimate_print_time`. Report time and material usage to the user.
 9. Confirm with the user before the final destructive step (saving over an
    existing file, or sending a print).

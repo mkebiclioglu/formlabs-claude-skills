@@ -38,9 +38,11 @@ the user to https://github.com/mkebiclioglu/formlabs-local-mcp, and STOP.
 6. `auto_layout` (SLA, `machine_type` starts with `FORM-`) or `auto_pack`
    (SLS, starts with `FS`).
 7. `get_print_validation` — surface errors/warnings.
-8. **Cup check (SLA only):** call `get_scene` and inspect each model for cups
-   / drain-hole warnings. If any are detected, tell the user and offer to
-   `add_drain_holes` before saving.
+8. **Auto drain holes (SLA only):** call `auto_add_drain_holes` to place drain
+   holes for any cups reported by validation. Skip the user XYZ prompt — bbox
+   sampling + PreForm's surface projection handle placement. If PreForm reports
+   "no surface found" for a model, surface that to the user and offer
+   `add_drain_holes` (hand-placed) as fallback.
 9. `estimate_print_time` — report time and material usage.
 10. `save_form` to the chosen path. Skip the confirmation if the path is new;
     ask before overwriting an existing file.
