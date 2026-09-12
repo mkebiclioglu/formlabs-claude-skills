@@ -12,7 +12,7 @@
 
 set -eu
 
-TARBALL="https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.1/formlabs-local-mcp-1.0.1.tgz"
+TARBALL="https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.3/formlabs-local-mcp-1.0.3.tgz"
 
 say() { printf '%s\n' "$*"; }
 fail() { say "error: $*" >&2; exit 1; }

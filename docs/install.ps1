@@ -10,7 +10,7 @@
 # Everything is pinned to a release; read on before you run it.
 
 $ErrorActionPreference = "Stop"
-$Tarball = "https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.1/formlabs-local-mcp-1.0.1.tgz"
+$Tarball = "https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.3/formlabs-local-mcp-1.0.3.tgz"
 
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
   throw "Node.js is required (20 or newer). Install it from https://nodejs.org, then run this again."
