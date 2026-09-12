@@ -61,7 +61,7 @@ for entry in marketplace.get("plugins", []):
             errors.append(f"{skill.relative_to(ROOT)}: missing description")
 
 # The install scripts and docs must pin the same npm version as the plugin.
-for f in ["docs/install.sh", "docs/install.ps1", "docs/index.html", "docs/demo.html"]:
+for f in ["docs/install.sh", "docs/install.ps1", "docs/index.html", "docs/docs.html"]:
     text = (ROOT / f).read_text()
     for url in pinned_urls:
         if url not in text:
