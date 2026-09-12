@@ -1,7 +1,7 @@
 {
   "name": "formlabs",
   "description": "Prepare and print Formlabs jobs: import models, orient, support, lay out, validate, estimate, save .form files or send to a printer.",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "author": {
     "name": "Mustafa Ebiclioglu",
     "url": "https://github.com/mkebiclioglu"

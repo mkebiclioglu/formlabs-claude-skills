@@ -48,7 +48,7 @@ Claude also picks these up on its own when you ask in plain language.
 .claude-plugin/marketplace.json   the marketplace (lists the plugin below)
 plugins/formlabs/
   .claude-plugin/plugin.json      plugin manifest
-  .mcp.json                       runs formlabs-local-mcp with npx, pinned to a release tarball
+  .mcp.json                       runs formlabs-local-mcp with npx, pinned to an exact npm version
   skills/{setup,prep,print}/      the skills
 docs/                             GitHub Pages site and the one-line installers
 scripts/validate.py               CI checks for manifests, skills and pinned versions
