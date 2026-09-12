@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 errors: list[str] = []
-TARBALL = re.compile(r"^https://github\.com/mkebiclioglu/formlabs-local-mcp/releases/download/v(\d+\.\d+\.\d+)/formlabs-local-mcp-\1\.tgz$")
+TARBALL = re.compile(r"^formlabs-local-mcp@\d+\.\d+\.\d+$")  # exact npm version, no ranges
 
 
 def load(path: Path) -> dict:
@@ -40,7 +40,7 @@ for entry in marketplace.get("plugins", []):
             errors.append(f"{name}: expected npx launcher")
         args = server.get("args", [])
         if args[:1] != ["-y"] or len(args) < 2 or not TARBALL.match(args[1]):
-            errors.append(f"{name}: MCP server must be `npx -y <pinned release tarball>`")
+            errors.append(f"{name}: MCP server must be `npx -y formlabs-local-mcp@<exact version>`")
         else:
             pinned_urls.add(args[1])
 
@@ -60,12 +60,12 @@ for entry in marketplace.get("plugins", []):
         if not re.search(r"^description:\s*\S", fm, re.M):
             errors.append(f"{skill.relative_to(ROOT)}: missing description")
 
-# The install scripts and docs must pin the same tarball as the plugin.
+# The install scripts and docs must pin the same npm version as the plugin.
 for f in ["docs/install.sh", "docs/install.ps1", "docs/index.html"]:
     text = (ROOT / f).read_text()
     for url in pinned_urls:
         if url not in text:
-            errors.append(f"{f}: does not reference the pinned tarball {url}")
+            errors.append(f"{f}: does not reference the pinned package {url}")
 
 if errors:
     print("\n".join(errors))

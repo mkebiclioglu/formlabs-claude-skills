@@ -12,7 +12,7 @@
 
 set -eu
 
-TARBALL="https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.3/formlabs-local-mcp-1.0.3.tgz"
+PACKAGE="formlabs-local-mcp@1.0.4"
 
 say() { printf '%s\n' "$*"; }
 fail() { say "error: $*" >&2; exit 1; }
@@ -31,7 +31,7 @@ claude plugin install formlabs@formlabs-claude-skills --scope user
 claude plugin update formlabs@formlabs-claude-skills >/dev/null 2>&1 || true
 
 say "Installing PreFormServer from Formlabs (verifying signature)..."
-npx -y "$TARBALL" install-preform
+npx -y "$PACKAGE" install-preform
 
 say ""
 say "Done. Start Claude Code and run /formlabs:setup to confirm, then try:"
