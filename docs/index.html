@@ -127,6 +127,15 @@
   .install .copy { border: 1px solid var(--line); background: var(--card); color: var(--fg); border-radius: 8px; padding: 0 14px; cursor: pointer; white-space: nowrap; }
   .install .copy.done { color: var(--ok); border-color: var(--ok); }
 
+  /* forum quotes */
+  .quotes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin: 14px 0; }
+  .q { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .q .who { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--muted); }
+  .q .av { width: 28px; height: 28px; border-radius: 50%; background: var(--code-bg); color: var(--fg); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex: none; }
+  .q .who b { color: var(--fg); font-weight: 600; }
+  .q blockquote { margin: 0; font-size: 0.97rem; line-height: 1.5; }
+  .q .src { font-size: 0.82rem; color: var(--muted); margin-top: auto; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .q .src .now { color: var(--accent); }
   .steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
   .steps > li { counter-increment: step; position: relative; padding: 0 0 20px 48px; }
   .steps > li::before { content: counter(step); position: absolute; left: 0; top: 2px; width: 32px; height: 32px;
@@ -268,6 +277,51 @@
   <div class="msg claude"><div class="who">Claude</div><p>Uploaded. The job is queued on Form4-XXXXXX; the printer will show it under Print Queue. It is not started automatically unless you ask.</p></div>
 </div>
 <div class="note">Every prep run on this page happened for real on 12 September 2026 with formlabs-local-mcp 1.0.4 and PreFormServer 3.62.1; the renders are PreForm's, cropped. There was no printer on that network, so the send step is shown the way the skill performs it (printer discovery, tank-material check, confirmation, upload through <code>print_to_printer</code>) with the serial blanked. Claude warns you if the tank material does not match the job.</div>
+
+<h2 id="asked">People have been asking for this since 2015</h2>
+<p class="sub">Threads from the <a href="https://forum.formlabs.com/">Formlabs community forum</a>, quoted verbatim with links. None of these people were writing about this project; they describe the gap it was built to close. The orange line under each is the tool that covers it today.</p>
+<div class="quotes">
+  <div class="q">
+    <div class="who"><span class="av">A</span><span><b>aim4apex</b> · Developers<br>July 2026</span></div>
+    <blockquote>"Manually arranging parts to find an optimal packing can be very time consuming and it’s impossible once the number of models or quantities exceed 2."</blockquote>
+    <div class="src"><a href="https://forum.formlabs.com/t/script-to-calculate-the-optimal-packing-of-multiple-models/46624">Read the thread</a><span class="now">now: one prompt, auto_pack</span></div>
+  </div>
+  <div class="q">
+    <div class="who"><span class="av">J</span><span><b>js_bb</b> · Feature Requests<br>January 2026</span></div>
+    <blockquote>"We’re developing software to support a facility that uses FormLabs printers (specifically the Form4 series) doing production manufacturing … We’re trying to reduce the amount of interaction a technician needs to have with the touchscreens."</blockquote>
+    <div class="src"><a href="https://forum.formlabs.com/t/feature-request-s-several-api-suggestions/45948">Read the thread</a><span class="now">now: list_devices, print_to_printer</span></div>
+  </div>
+  <div class="q">
+    <div class="who"><span class="av">I</span><span><b>isonje</b> · Developers<br>November 2025</span></div>
+    <blockquote>"I’m imagining a scenario where I load in 100+ parts queued for production, and it automatically organizes them into the most efficient set of build chambers to hit the highest packing density and minimize total print runs."</blockquote>
+    <div class="src"><a href="https://forum.formlabs.com/t/python-script-to-load-stl-obj-stp-and-form-files-compute-best-packing-arrangement/45649/3">Read the thread</a><span class="now">now: fill_build_chamber, pack_and_cage</span></div>
+  </div>
+  <div class="q">
+    <div class="who"><span class="av">D</span><span><b>dcarku</b> · Developers<br>April 2026</span></div>
+    <blockquote>"Did you end up releasing the GitHub? I’m working on automated cost calculation tools this would be great!"</blockquote>
+    <div class="src"><a href="https://forum.formlabs.com/t/python-script-to-load-stl-obj-stp-and-form-files-compute-best-packing-arrangement/45649/4">Read the thread</a><span class="now">now: estimate_print_time, get_scene</span></div>
+  </div>
+  <div class="q">
+    <div class="who"><span class="av">T</span><span><b>Thibault2ss</b> · Feature Requests<br>March 2018</span></div>
+    <blockquote>"I have my own private cloud platform where I can handle my FDM printers (get status, send prints…), and I want to integrate formlabs printers on that same platform … if PreForm could be used on the command line, without using the GUI … It is not possible now."</blockquote>
+    <div class="src"><a href="https://forum.formlabs.com/t/export-and-store-flp-files-with-api-or-through-preform/17786">Read the thread</a><span class="now">now: any MCP client, no window</span></div>
+  </div>
+  <div class="q">
+    <div class="who"><span class="av">G</span><span><b>gp1</b> · Support<br>December 2023</span></div>
+    <blockquote>"I am using the command line to interact with preform. When I use the --material flag or the --resolution flag nothing happens. Anyone using this successfully?" No replies before the thread auto-closed.</blockquote>
+    <div class="src"><a href="https://forum.formlabs.com/t/command-line-material-flag/37413">Read the thread</a><span class="now">now: list_materials, exact codes</span></div>
+  </div>
+  <div class="q">
+    <div class="who"><span class="av">M</span><span><b>Mordiev</b> · Feature Requests<br>September 2017</span></div>
+    <blockquote>"So it took me about 10 minutes to get all 32 item positioned on the build plate."</blockquote>
+    <div class="src"><a href="https://forum.formlabs.com/t/preform-cloned-items-mass-updates/14857">Read the thread</a><span class="now">now: duplicate_model, auto_layout</span></div>
+  </div>
+  <div class="q">
+    <div class="who"><span class="av">C</span><span><b>ChristopherBarr</b> · Feature Requests<br>February 2015</span></div>
+    <blockquote>"being albe to print from commandline would allow scheduling the print as well." [sic]</blockquote>
+    <div class="src"><a href="https://forum.formlabs.com/t/running-without-gui-from-command-line/3715/2">Read the thread</a><span class="now">now: a prompt, a script, or a cron job</span></div>
+  </div>
+</div>
 
 <h2 id="install">Get it</h2>
 <p class="sub">Needs <a href="https://nodejs.org">Node.js 20+</a> and <a href="https://claude.com/claude-code">Claude Code</a>. The script adds the plugin and downloads PreFormServer (Formlabs' headless PreForm) from Formlabs, checking Formlabs' code signature before installing it into a folder you own. No sudo, nothing global. <a href="install.sh">Read it first</a> if you like; it is short.</p>
