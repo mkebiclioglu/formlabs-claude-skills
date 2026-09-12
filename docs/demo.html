@@ -4,47 +4,63 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Demo: a downloaded STL to a Form 4 job in one prompt</title>
-<meta name="description" content="A real run: a bracket downloaded from the internet, oriented, supported, validated and estimated for a Formlabs Form 4 by Claude in one sentence, then sent to the printer.">
+<meta name="description" content="A real run: a bracket downloaded from the internet, oriented, supported, validated and estimated for a Formlabs Form 4 by Claude in one sentence. Spin the result, compare materials, replay the run.">
 <meta property="og:title" content="From a downloaded STL to a Form 4 job in one prompt">
-<meta property="og:description" content="Watch Claude take a bracket from download to a validated, supported Formlabs print job, then send it to the printer after you say yes.">
+<meta property="og:description" content="Spin the real supported part, replay the run, compare seven materials and a six-up batch. Every number came from PreForm.">
 <meta property="og:image" content="https://mkebiclioglu.github.io/formlabs-claude-skills/demo/x-end-idler.png">
 <style>
   :root {
     --bg: #fbfaf7; --fg: #1c1b19; --muted: #5f5d58; --line: #e4e1da; --card: #ffffff;
-    --accent: #d9542b; --accent-fg: #ffffff; --code-bg: #f1efe9; --ok: #2f7d4f; --you: #e9efe6;
+    --accent: #d9542b; --accent-fg: #ffffff; --code-bg: #f1efe9; --ok: #2f7d4f; --you: #e9efe6; --stage: #f3f1ec;
     color-scheme: light dark;
   }
   @media (prefers-color-scheme: dark) {
     :root { --bg: #141412; --fg: #ecebe6; --muted: #a29f97; --line: #2b2a26; --card: #1c1b19;
-            --accent: #f0764a; --accent-fg: #141412; --code-bg: #22211e; --ok: #6cc08b; --you: #1f2a1f; }
+            --accent: #f0764a; --accent-fg: #141412; --code-bg: #22211e; --ok: #6cc08b; --you: #1f2a1f; --stage: #1a1a17; }
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--fg);
          font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  main { max-width: 960px; margin: 0 auto; padding: 24px 20px 80px; }
+  main { max-width: 980px; margin: 0 auto; padding: 24px 20px 80px; }
   a { color: var(--accent); }
   code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92em; }
   code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
-  pre { background: var(--code-bg); padding: 14px 16px; border-radius: 8px; overflow-x: auto; line-height: 1.45; }
+  pre { background: var(--code-bg); padding: 14px 16px; border-radius: 8px; overflow-x: auto; line-height: 1.45; margin: 0; }
   pre code { background: none; padding: 0; }
   h1 { font-size: 2.4rem; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.015em; }
-  h2 { font-size: 1.45rem; margin: 56px 0 14px; letter-spacing: -0.01em; }
+  h2 { font-size: 1.5rem; margin: 64px 0 8px; letter-spacing: -0.01em; }
+  h2 + p.sub { margin: 0 0 18px; color: var(--muted); }
   h3 { font-size: 1.05rem; margin: 22px 0 8px; }
+  button { font: inherit; }
   .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
          padding: 8px 0 18px; border-bottom: 1px solid var(--line); font-size: 0.95rem; }
   .top nav { display: flex; gap: 16px; flex-wrap: wrap; }
   .brand { font-weight: 700; color: var(--fg); text-decoration: none; }
 
-  .hero { display: grid; grid-template-columns: 1.15fr 1fr; gap: 32px; align-items: center; padding: 44px 0 20px; }
-  .hero p.lead { font-size: 1.15rem; color: var(--muted); margin: 0 0 22px; }
-  .hero img { width: 100%; height: auto; max-width: 420px; display: block; margin: 0 auto; }
-  .hero figcaption { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 8px; }
+  /* hero */
+  .hero { display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; align-items: center; padding: 40px 0 8px; }
+  .hero p.lead { font-size: 1.12rem; color: var(--muted); margin: 0 0 20px; }
   .cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
   .btn { display: inline-block; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 600;
-         border: 1px solid var(--line); color: var(--fg); background: var(--card); }
+         border: 1px solid var(--line); color: var(--fg); background: var(--card); cursor: pointer; }
   .btn.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   @media (max-width: 720px) { .hero { grid-template-columns: 1fr; } h1 { font-size: 1.9rem; } }
 
+  /* turntable */
+  .turn { position: relative; width: 100%; aspect-ratio: 520 / 560; max-width: 440px; margin: 0 auto; border-radius: 14px;
+          background: radial-gradient(ellipse at 50% 92%, color-mix(in srgb, var(--fg) 10%, transparent), transparent 60%), var(--stage);
+          cursor: grab; user-select: none; touch-action: pan-y; overflow: hidden; }
+  .turn:active { cursor: grabbing; }
+  .turn img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; -webkit-user-drag: none; }
+  .turn .hint { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); font-size: 0.8rem; color: var(--muted);
+                background: color-mix(in srgb, var(--card) 85%, transparent); padding: 4px 10px; border-radius: 999px; white-space: nowrap;
+                transition: opacity .4s; }
+  .turn.touched .hint { opacity: 0; }
+  .turn .deg { position: absolute; top: 10px; right: 12px; font-size: 0.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .turn .tag { position: absolute; top: 10px; left: 12px; font-size: 0.75rem; color: var(--muted); }
+
+  /* chat + log */
   .chat { display: grid; gap: 12px; margin: 16px 0; }
   .msg { padding: 14px 18px; border-radius: 12px; max-width: 46rem; }
   .msg.you { background: var(--you); border-bottom-right-radius: 4px; justify-self: end; }
@@ -52,34 +68,77 @@
   .msg .who { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
   .msg p { margin: 0 0 8px; } .msg p:last-child { margin: 0; }
   .msg ul { margin: 6px 0 0; padding-left: 20px; } .msg li { margin: 2px 0; }
-
-  .log { list-style: none; padding: 0; margin: 12px 0; border: 1px solid var(--line); border-radius: 10px; background: var(--card); overflow: hidden; }
-  .log li { display: grid; grid-template-columns: 200px 1fr; gap: 12px; padding: 9px 14px; border-top: 1px solid var(--line); font-size: 0.93rem; }
-  .log li:first-child { border-top: 0; }
+  .replay { border: 1px solid var(--line); border-radius: 12px; background: var(--card); padding: 16px 18px; }
+  .replay .bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+  .replay .bar .st { color: var(--muted); font-size: 0.9rem; }
+  .log { list-style: none; padding: 0; margin: 12px 0 0; }
+  .log li { display: grid; grid-template-columns: 190px 1fr; gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 0.93rem;
+            opacity: 0; transform: translateY(4px); transition: opacity .35s, transform .35s; }
+  .log li.on { opacity: 1; transform: none; }
+  .log li.wait .r::after { content: ""; display: inline-block; width: 10px; height: 10px; margin-left: 8px; border: 2px solid var(--accent);
+            border-right-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; vertical-align: middle; }
+  @keyframes spin { to { transform: rotate(360deg); } }
   .log code { background: none; padding: 0; color: var(--accent); }
   .log .r { color: var(--fg); }
+  .msg.claude.final { opacity: 0; transition: opacity .5s; } .msg.claude.final.on { opacity: 1; }
   @media (max-width: 600px) { .log li { grid-template-columns: 1fr; gap: 2px; } }
 
+  /* compare slider */
+  .cmp { position: relative; width: 100%; aspect-ratio: 520 / 560; max-width: 440px; margin: 0 auto; border-radius: 14px; overflow: hidden; background: var(--stage); user-select: none; }
+  .cmp img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; -webkit-user-drag: none; }
+  .cmp .after { clip-path: inset(0 0 0 50%); }
+  .cmp .handle { position: absolute; top: 0; bottom: 0; left: 50%; width: 2px; background: var(--accent); transform: translateX(-1px); pointer-events: none; }
+  .cmp .handle::after { content: "◀ ▶"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--accent); color: var(--accent-fg);
+                         font-size: 0.7rem; padding: 6px 8px; border-radius: 999px; letter-spacing: 1px; white-space: nowrap; }
+  .cmp input[type=range] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; margin: 0; cursor: ew-resize; }
+  .cmp .lbl { position: absolute; top: 10px; font-size: 0.75rem; color: var(--muted); background: color-mix(in srgb, var(--card) 85%, transparent); padding: 3px 8px; border-radius: 999px; }
+  .cmp .lbl.l { left: 10px; } .cmp .lbl.r { right: 10px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: center; }
+  @media (max-width: 720px) { .two { grid-template-columns: 1fr; } }
+
+  /* explorer */
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+  .chip { border: 1px solid var(--line); background: var(--card); color: var(--fg); padding: 7px 12px; border-radius: 999px; cursor: pointer; font-size: 0.92rem; }
+  .chip[aria-pressed=true] { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+  .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 16px 0; }
   .stat { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
-  .stat .v { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; }
+  .stat .v { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; transition: color .3s; }
+  .stat .v.flash { color: var(--accent); }
   .stat .k { color: var(--muted); font-size: 0.85rem; }
   .ok { color: var(--ok); font-weight: 600; }
+  .tablewrap { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.93rem; margin: 8px 0; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; }
+  tr.sel td { background: color-mix(in srgb, var(--accent) 12%, transparent); font-weight: 600; }
+  tbody tr { cursor: pointer; }
+  .explorer { display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px; align-items: start; }
+  .explorer img { width: 100%; height: auto; border-radius: 12px; background: var(--stage); }
+  @media (max-width: 720px) { .explorer { grid-template-columns: 1fr; } }
+
+  /* install */
+  .install { border: 1px solid var(--line); border-radius: 12px; background: var(--card); padding: 16px 18px; }
+  .install .tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+  .install .tabs button { border: 1px solid var(--line); background: transparent; color: var(--fg); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
+  .install .tabs button[aria-selected=true] { background: var(--code-bg); font-weight: 600; }
+  .install .row { display: flex; gap: 8px; align-items: stretch; }
+  .install pre { flex: 1; }
+  .install .copy { border: 1px solid var(--line); background: var(--card); color: var(--fg); border-radius: 8px; padding: 0 14px; cursor: pointer; white-space: nowrap; }
+  .install .copy.done { color: var(--ok); border-color: var(--ok); }
 
   .steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
-  .steps > li { counter-increment: step; position: relative; padding: 0 0 22px 48px; }
+  .steps > li { counter-increment: step; position: relative; padding: 0 0 20px 48px; }
   .steps > li::before { content: counter(step); position: absolute; left: 0; top: 2px; width: 32px; height: 32px;
     border-radius: 50%; background: var(--accent); color: var(--accent-fg); font-weight: 700;
     display: flex; align-items: center; justify-content: center; }
-  .steps h3 { margin: 4px 0 6px; }
-  .steps p { margin: 0 0 8px; }
-
+  .steps h3 { margin: 4px 0 6px; } .steps p { margin: 0 0 8px; }
   .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 14px 0; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
-  .card h3 { margin: 0 0 6px; font-size: 1rem; }
-  .card p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .card h3 { margin: 0 0 6px; font-size: 1rem; } .card p { margin: 0; color: var(--muted); font-size: 0.95rem; }
   .note { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 14px 0; color: var(--muted); font-size: 0.95rem; }
   footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; }
+  @media (prefers-reduced-motion: reduce) { .log li, .stat .v, .msg.claude.final { transition: none; } }
 </style>
 </head>
 <body>
@@ -87,7 +146,7 @@
 <div class="top">
   <a class="brand" href="./">Formlabs for Claude Code</a>
   <nav>
-    <a href="./#install">Install</a>
+    <a href="#install">Install</a>
     <a href="./">Docs</a>
     <a href="https://github.com/mkebiclioglu/formlabs-local-mcp">MCP server</a>
     <a href="https://github.com/mkebiclioglu/formlabs-claude-skills">GitHub</a>
@@ -97,64 +156,105 @@
 <section class="hero">
   <div>
     <h1>A downloaded STL to a print-ready Form 4 job. One sentence.</h1>
-    <p class="lead">You know the routine: open PreForm, import, orient, generate supports, check for cups, add drain holes, read the estimate, upload, wait. This page is a real run where Claude did all of it from one prompt, and the only thing left for a human was to say "yes, send it".</p>
+    <p class="lead">Open PreForm, import, orient, supports, check for cups, drain holes, estimate, upload. You have done it a thousand times. This page is a real run where Claude did all of it from one prompt in about two minutes, and the part on the right is the actual result. Drag it.</p>
     <div class="cta">
-      <a class="btn primary" href="./#install">Install in one line</a>
-      <a class="btn" href="#run">See the run</a>
+      <a class="btn primary" href="#install">Install in one line</a>
+      <button class="btn" id="playTop" type="button">▶ Replay the run</button>
     </div>
   </div>
-  <figure>
-    <img src="demo/x-end-idler.png" alt="The bracket tilted, supported and rafted for the Form 4, rendered by PreForm">
-    <figcaption>PreForm's own render of the result, saved by Claude as part of the job.</figcaption>
-  </figure>
+  <div class="turn" id="turn" aria-label="Drag to rotate the supported part">
+    <span class="tag">PreForm render, Form 4 · Tough 2000 V2</span>
+    <span class="deg" id="deg">0°</span>
+    <img id="turnImg" src="demo/turn-02.png" alt="The bracket oriented, supported and rafted for the Form 4, rendered by PreForm" width="520" height="560" decoding="async">
+    <span class="hint">drag to spin</span>
+  </div>
 </section>
 
 <h2 id="run">The run</h2>
-<p>The part is an X-axis idler bracket from the Original Prusa i3 MK3S: two bearing bores, a belt slot, a few M3 holes. A typical "print me a stiff one of these in an engineering resin" job. It was downloaded from the internet the way any part is, dropped in a folder under the home directory, and handed to Claude Code:</p>
+<p class="sub">An X-axis idler bracket from the Original Prusa i3 MK3S: two bearing bores, a belt slot, a few M3 holes. Downloaded the way any part is, dropped under the home folder, and handed to Claude Code. Every line below is a real tool call and what came back.</p>
 
-<div class="chat">
-  <div class="msg you"><div class="who">You</div>
-    <p>Prep <code>~/formlabs-demo/x-end-idler.stl</code> for the Form 4 in Tough 2000 at 0.1 mm and save the job next to it.</p>
+<div class="replay" id="replay">
+  <div class="bar">
+    <button class="btn primary" id="play" type="button">▶ Replay the run</button>
+    <span class="st" id="status">Twelve tool calls, replayed at about 8× speed.</span>
   </div>
-  <div class="msg claude"><div class="who">Claude</div>
-    <p>Done. Form 4, Tough 2000 V2, 0.1 mm layers (Supports V2 settings).</p>
-    <ul>
-      <li>Auto-oriented and supported; 717 layers.</li>
-      <li>Validation: no cups, no unsupported minima, not undersupported, no seam line.</li>
-      <li>Print time about <strong>1 h 56 min</strong>. Resin <strong>45.6 ml</strong> total, 35.0 ml of that in the part.</li>
-      <li>Saved <code>~/formlabs-demo/x-end-idler.form</code> and a preview <code>x-end-idler.png</code>.</li>
-    </ul>
-    <p>Open the .form in PreForm to inspect it, or tell me which printer to send it to.</p>
+  <div class="chat">
+    <div class="msg you"><div class="who">You</div>
+      <p>Prep <code>~/formlabs-demo/x-end-idler.stl</code> for the Form 4 in Tough 2000 at 0.1 mm and save the job next to it.</p>
+    </div>
+  </div>
+  <ul class="log" id="log">
+    <li data-wait="900"><code>health_check</code><span class="r">PreFormServer 3.62.1 started on demand and answered.</span></li>
+    <li data-wait="700"><code>list_materials</code><span class="r">Looked up the Form 4 list and picked <code>FLTO2002</code> (Tough 2000 V2) at 0.1 mm, Supports V2. No guessed codes.</span></li>
+    <li data-wait="400"><code>create_scene</code><span class="r">Empty Form 4 scene, 200 × 125 × 210 mm build volume.</span></li>
+    <li data-wait="1200"><code>import_model</code><span class="r">Loaded the STL with mesh repair on; 37 × 40 × 58 mm, in bounds.</span></li>
+    <li data-wait="1500"><code>auto_orient</code><span class="r">Flipped the part over and tilted it about 11°, the orientation PreForm judges best for printing.</span></li>
+    <li data-wait="4500" data-label="generating supports"><code>auto_support</code><span class="r">Supports and raft with PreForm's default density and touchpoint size.</span></li>
+    <li data-wait="800"><code>auto_layout</code><span class="r">Centred on the platform.</span></li>
+    <li data-wait="1000"><code>get_print_validation</code><span class="r"><span class="ok">cups 0 · unsupported minima 0 · undersupported no · seam line no</span></span></li>
+    <li data-wait="900"><code>estimate_print_time</code><span class="r">6975 s, so 1 h 56 min.</span></li>
+    <li data-wait="500"><code>get_scene</code><span class="r">45.6 ml resin, of which 35.0 ml is the part itself.</span></li>
+    <li data-wait="700"><code>save_form</code><span class="r">Wrote <code>x-end-idler.form</code> (1.0 MB) next to the STL.</span></li>
+    <li data-wait="700"><code>save_screenshot</code><span class="r">Rendered the images on this page.</span></li>
+  </ul>
+  <div class="chat">
+    <div class="msg claude final" id="final"><div class="who">Claude</div>
+      <p>Done. Form 4, Tough 2000 V2, 0.1 mm layers (Supports V2 settings).</p>
+      <ul>
+        <li>Auto-oriented and supported; 717 layers.</li>
+        <li>Validation: no cups, no unsupported minima, not undersupported, no seam line.</li>
+        <li>Print time about <strong>1 h 56 min</strong>. Resin <strong>45.6 ml</strong> total, 35.0 ml of that in the part.</li>
+        <li>Saved <code>~/formlabs-demo/x-end-idler.form</code> and a preview <code>x-end-idler.png</code>.</li>
+      </ul>
+      <p>Open the .form in PreForm to inspect it, or tell me which printer to send it to.</p>
+    </div>
   </div>
 </div>
 
-<h3>What happened underneath</h3>
-<p>Every line below is a real tool call from the run, in order, with what came back. This is what the MCP server exposes to Claude; the skill tells it which calls to make and in what order.</p>
-<ul class="log">
-  <li><code>health_check</code><span class="r">PreFormServer 3.62.1 started on demand and answered.</span></li>
-  <li><code>list_materials</code><span class="r">Looked up the Form 4 list and picked <code>FLTO2002</code> (Tough 2000 V2) at 0.1 mm, Supports V2. No guessed codes.</span></li>
-  <li><code>create_scene</code><span class="r">Empty Form 4 scene, 200 × 125 × 210 mm build volume.</span></li>
-  <li><code>import_model</code><span class="r">Loaded the STL with mesh repair on; 37 × 40 × 58 mm, in bounds.</span></li>
-  <li><code>auto_orient</code><span class="r">Flipped the part over and tilted it about 11°, the orientation PreForm judges best for printing.</span></li>
-  <li><code>auto_support</code><span class="r">Supports and raft with PreForm's default density and touchpoint size.</span></li>
-  <li><code>auto_layout</code><span class="r">Centred on the platform.</span></li>
-  <li><code>get_print_validation</code><span class="r"><span class="ok">cups 0 · unsupported minima 0 · undersupported no · seam line no</span></span></li>
-  <li><code>estimate_print_time</code><span class="r">6975 s, so 1 h 56 min.</span></li>
-  <li><code>get_scene</code><span class="r">45.6 ml resin, of which 35.0 ml is the part itself.</span></li>
-  <li><code>save_form</code><span class="r">Wrote <code>x-end-idler.form</code> (1.0 MB) next to the STL.</span></li>
-  <li><code>save_screenshot</code><span class="r">Rendered the image at the top of this page.</span></li>
-</ul>
-
-<div class="stats">
-  <div class="stat"><div class="v">1 h 56 min</div><div class="k">Estimated print time</div></div>
-  <div class="stat"><div class="v">45.6 ml</div><div class="k">Tough 2000 V2, supports included</div></div>
-  <div class="stat"><div class="v">717</div><div class="k">Layers at 0.1 mm</div></div>
-  <div class="stat"><div class="v ok">Clean</div><div class="k">Cups, minima, supports, seam line</div></div>
+<h2 id="compare">What PreForm did to it</h2>
+<p class="sub">Same camera, same part. Left is the STL as downloaded, right is what Claude saved. Drag the divider.</p>
+<div class="two">
+  <div class="cmp" id="cmp">
+    <img class="before" src="demo/before.png" alt="The raw STL as downloaded, standing upright with a flat base" width="520" height="560" loading="lazy">
+    <img class="after" id="cmpAfter" src="demo/after.png" alt="The same part tilted, on a raft, with a lattice of supports" width="520" height="560" loading="lazy">
+    <div class="handle" id="cmpHandle"></div>
+    <span class="lbl l">as downloaded</span><span class="lbl r">print-ready</span>
+    <input type="range" id="cmpRange" min="0" max="100" value="50" aria-label="Compare before and after">
+  </div>
+  <div>
+    <h3>Why it tilted the part</h3>
+    <p>As downloaded, the part stands on its flat base with both bearing bores pointing straight up. PreForm's auto-orient flipped it and leaned it about 11°, the orientation its algorithm scores best for overhangs, support count and surface finish, then built the raft and lattice you see. Claude did not decide any of that; it asked PreForm to, then checked the answer with <code>get_print_validation</code> and reported zero cups and zero unsupported minima.</p>
+    <h3>What you get back</h3>
+    <p>A normal <code>.form</code> file. Open it in PreForm, move a support, change your mind about the raft. Nothing is locked away in a chat window.</p>
+  </div>
 </div>
-<p>Wall-clock time from prompt to saved file: about two minutes, most of it PreForm generating supports. No window was opened.</p>
+
+<h2 id="explore">Same part, other choices</h2>
+<p class="sub">Claude re-ran the pipeline in seven materials, at two layer heights, as a six-up batch, and on a Fuse 1+. Pick one; every number is PreForm's own estimate from those runs.</p>
+<div class="explorer">
+  <div>
+    <div class="chips" id="chips" role="group" aria-label="Choose a run"></div>
+    <div class="stats">
+      <div class="stat"><div class="v" id="sTime">1 h 56 min</div><div class="k" id="sTimeK">Estimated print time</div></div>
+      <div class="stat"><div class="v" id="sMat">45.6 ml</div><div class="k" id="sMatK">Resin, supports included</div></div>
+      <div class="stat"><div class="v" id="sLayers">717</div><div class="k" id="sLayersK">Layers at 0.1 mm</div></div>
+      <div class="stat"><div class="v ok" id="sVal">Clean</div><div class="k">Cups, minima, supports, seam line</div></div>
+    </div>
+    <p id="sNote" class="note" style="margin-top:0"></p>
+  </div>
+  <div>
+    <img id="sImg" src="demo/turn-02.png" alt="" width="520" height="560" loading="lazy">
+    <div class="tablewrap">
+      <table id="tbl">
+        <thead><tr><th>Run</th><th>Time</th><th>Material</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
 <h2 id="send">Then: send it</h2>
-<p>Printing is the one step that cannot be undone, so the <code>/formlabs:print</code> skill always stops for an explicit yes. On a network with a Form 4, the exchange looks like this:</p>
+<p class="sub">Printing is the one step that cannot be undone, so the <code>/formlabs:print</code> skill always stops for an explicit yes. On a network with a Form 4, the exchange looks like this:</p>
 <div class="chat">
   <div class="msg you"><div class="who">You</div><p>Send it to the Form 4 on the bench.</p></div>
   <div class="msg claude"><div class="who">Claude</div>
@@ -165,36 +265,26 @@
   <div class="msg you"><div class="who">You</div><p>Yes.</p></div>
   <div class="msg claude"><div class="who">Claude</div><p>Uploaded. The job is queued on Form4-XXXXXX; the printer will show it under Print Queue. It is not started automatically unless you ask.</p></div>
 </div>
-<div class="note">The prep above ran for real on 12 September 2026 with formlabs-local-mcp 1.0.4 and PreFormServer 3.62.1. There was no printer on that network, so the send step is shown the way the skill performs it (printer discovery, tank-material check, confirmation, upload through <code>print_to_printer</code>) with the serial blanked. Claude warns you if the tank material does not match the job.</div>
+<div class="note">Every prep run on this page happened for real on 12 September 2026 with formlabs-local-mcp 1.0.4 and PreFormServer 3.62.1; the renders are PreForm's, cropped. There was no printer on that network, so the send step is shown the way the skill performs it (printer discovery, tank-material check, confirmation, upload through <code>print_to_printer</code>) with the serial blanked. Claude warns you if the tank material does not match the job.</div>
 
-<h2 id="steps">Do it yourself</h2>
-<ol class="steps">
-  <li>
-    <h3>Download a part</h3>
-    <p>Anything from Thingiverse, Printables, GrabCAD, or your CAD export: STL, OBJ, 3MF or STEP. Save it somewhere under your home folder; the server refuses paths outside the directories you allow. The part used here is <a href="https://github.com/prusa3d/Original-Prusa-i3/blob/MK3S/Printed-Parts/STL/x-end-idler.stl">x-end-idler.stl</a> from Prusa Research's open-hardware repository.</p>
-  </li>
-  <li>
-    <h3>Install the plugin (once)</h3>
-    <pre><code># macOS / Linux
-curl -fsSL https://mkebiclioglu.github.io/formlabs-claude-skills/install.sh | sh
-# Windows (PowerShell)
-irm https://mkebiclioglu.github.io/formlabs-claude-skills/install.ps1 | iex</code></pre>
-    <p>Needs Node.js 20+ and Claude Code. The script adds the plugin and downloads PreFormServer (Formlabs' headless PreForm) from Formlabs, checking Formlabs' code signature before installing it into a folder you own. No sudo, nothing global. Not on Claude Code? The MCP server runs on its own in Claude Desktop, Cursor and any MCP client: <code>npx -y formlabs-local-mcp@1.0.4</code>. <a href="./#other-clients">Details</a>.</p>
-  </li>
-  <li>
-    <h3>Ask</h3>
-    <p>In Claude Code, in plain words: "Prep <code>~/parts/bracket.stl</code> for the Form 4 in Tough 2000 and save it." If you leave out the material, Claude lists the ones your printer supports and asks. Say "print" instead of "prep" and it will find your printer and ask before uploading.</p>
-  </li>
-  <li>
-    <h3>Read the summary, open the .form if you want</h3>
-    <p>You get printer, material, layer height, print time, resin use, the validation result and the file paths. The .form opens in PreForm like any other; nothing about the job is hidden from you.</p>
-  </li>
-</ol>
+<h2 id="install">Get it</h2>
+<p class="sub">Needs <a href="https://nodejs.org">Node.js 20+</a> and <a href="https://claude.com/claude-code">Claude Code</a>. The script adds the plugin and downloads PreFormServer (Formlabs' headless PreForm) from Formlabs, checking Formlabs' code signature before installing it into a folder you own. No sudo, nothing global. <a href="install.sh">Read it first</a> if you like; it is short.</p>
+<div class="install" id="install-box">
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" data-os="mac" aria-selected="true">macOS / Linux</button>
+    <button type="button" role="tab" data-os="win" aria-selected="false">Windows</button>
+  </div>
+  <div class="row">
+    <pre><code id="cmd">curl -fsSL https://mkebiclioglu.github.io/formlabs-claude-skills/install.sh | sh</code></pre>
+    <button type="button" class="copy" id="copy">Copy</button>
+  </div>
+  <p style="margin:12px 0 0;color:var(--muted);font-size:0.95rem">Then open Claude Code, run <code>/formlabs:setup</code>, and say something like <em>"Prep ~/parts/bracket.stl for the Form 4 in Tough 2000 and save it."</em> Not on Claude Code? The MCP server runs on its own in Claude Desktop, Cursor and any MCP client: <code>npx -y formlabs-local-mcp@1.0.4</code>. <a href="./#other-clients">Details</a>.</p>
+</div>
 
 <h2 id="more">Where it starts to pay off</h2>
 <div class="cards">
   <div class="card"><h3>Batches</h3><p>"Pack all twelve STLs in <code>~/parts/rev-c</code> onto the Fuse 1+ in Nylon 12 and tell me the total powder use." One prompt, one packed chamber, one estimate.</p></div>
-  <div class="card"><h3>Material what-ifs</h3><p>"Same part in Rigid 10K at 0.05 mm, how long?" A second scene and a second estimate in seconds, no re-importing.</p></div>
+  <div class="card"><h3>Material what-ifs</h3><p>"Same part in Grey at 0.05 mm, how long?" A second scene and a second estimate in seconds. The explorer above is exactly that, nine times.</p></div>
   <div class="card"><h3>Hollowing and drain holes</h3><p>"Hollow it to 2 mm walls, add drain holes, re-validate." Cups get flagged and holes placed without a mouse.</p></div>
   <div class="card"><h3>Reprints</h3><p>"Open <code>~/jobs/housing.form</code>, swap the model for <code>housing-v4.stl</code>, keep the orientation, re-estimate."</p></div>
   <div class="card"><h3>Your fleet</h3><p>"Which printers are online and what is loaded in each tank?" Then send the job to the one with the right resin.</p></div>
@@ -208,20 +298,153 @@ irm https://mkebiclioglu.github.io/formlabs-claude-skills/install.ps1 | iex</cod
   <li>Install PreFormServer from anywhere but <code>downloads.formlabs.com</code>, or without a valid Formlabs code signature.</li>
   <li>See your Formlabs password. <code>login</code> reads it from the environment and never returns tokens to the model.</li>
 </ul>
-<p>More in the <a href="./#security">security section</a> of the docs and in <a href="https://github.com/mkebiclioglu/formlabs-local-mcp/blob/main/SECURITY.md">SECURITY.md</a>.</p>
-
-<h2 id="get">Get it</h2>
-<pre><code># macOS / Linux
-curl -fsSL https://mkebiclioglu.github.io/formlabs-claude-skills/install.sh | sh
-# Windows (PowerShell)
-irm https://mkebiclioglu.github.io/formlabs-claude-skills/install.ps1 | iex</code></pre>
-<p>Then open Claude Code and run <code>/formlabs:setup</code>. Tried it? Tell us what you printed in <a href="https://github.com/mkebiclioglu/formlabs-claude-skills/discussions/categories/show-and-tell">Show and tell</a>, and report anything that went sideways as an <a href="https://github.com/mkebiclioglu/formlabs-claude-skills/issues/new/choose">issue</a>. Both repos are MIT and take pull requests.</p>
+<p>More in the <a href="./#security">security section</a> of the docs and in <a href="https://github.com/mkebiclioglu/formlabs-local-mcp/blob/main/SECURITY.md">SECURITY.md</a>. Tried it? Tell us what you printed in <a href="https://github.com/mkebiclioglu/formlabs-claude-skills/discussions/categories/show-and-tell">Show and tell</a>. Both repos are MIT and take pull requests.</p>
 
 <footer>
   MIT licensed. An independent project, not affiliated with or endorsed by Formlabs Inc. The Formlabs Local API is covered by the
-  <a href="https://formlabs.com/legal/formlabs-api-license-agreement/">Formlabs API License Agreement</a>. The demo part is from
+  <a href="https://formlabs.com/legal/formlabs-api-license-agreement/">Formlabs API License Agreement</a>. The demo part is
+  <a href="https://github.com/prusa3d/Original-Prusa-i3/blob/MK3S/Printed-Parts/STL/x-end-idler.stl">x-end-idler.stl</a> from
   <a href="https://github.com/prusa3d/Original-Prusa-i3">Original Prusa i3 MK3S</a> by Prusa Research (GPL).
 </footer>
 </main>
+
+<script>
+(function () {
+  // ---------- turntable ----------
+  var N = 24, frames = [], loaded = 0;
+  var turn = document.getElementById('turn'), img = document.getElementById('turnImg'), deg = document.getElementById('deg');
+  var idx = 2, auto = true, dragging = false, lastX = 0, acc = 0;
+  for (var i = 0; i < N; i++) { frames[i] = 'demo/turn-' + String(i).padStart(2, '0') + '.png'; }
+  function show(i) { idx = ((i % N) + N) % N; img.src = frames[idx]; deg.textContent = (idx * 15) + '°'; }
+  function preload() {
+    var q = [];
+    for (var k = 1; k < N; k++) q.push((idx + k) % N);
+    (function next() {
+      if (!q.length) return;
+      var im = new Image(); im.onload = im.onerror = function () { loaded++; next(); }; im.src = frames[q.shift()];
+    })();
+  }
+  if ('requestIdleCallback' in window) requestIdleCallback(preload); else setTimeout(preload, 300);
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var t0 = performance.now();
+  function tick(t) {
+    if (auto && !reduce && document.visibilityState === 'visible' && t - t0 > 220) { t0 = t; show(idx + 1); }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  turn.addEventListener('pointerdown', function (e) {
+    dragging = true; auto = false; lastX = e.clientX; acc = 0; turn.classList.add('touched'); turn.setPointerCapture(e.pointerId);
+  });
+  turn.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    acc += e.clientX - lastX; lastX = e.clientX;
+    var step = Math.max(6, turn.clientWidth / 48);
+    while (acc > step) { show(idx + 1); acc -= step; }
+    while (acc < -step) { show(idx - 1); acc += step; }
+  });
+  function up() { dragging = false; }
+  turn.addEventListener('pointerup', up); turn.addEventListener('pointercancel', up);
+  turn.tabIndex = 0;
+  turn.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') { auto = false; show(idx - 1); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { auto = false; show(idx + 1); e.preventDefault(); }
+  });
+
+  // ---------- replay ----------
+  var log = document.getElementById('log'), items = Array.prototype.slice.call(log.children);
+  var final = document.getElementById('final'), status = document.getElementById('status');
+  var playBtns = [document.getElementById('play'), document.getElementById('playTop')];
+  var running = false, timers = [];
+  function reset() { timers.forEach(clearTimeout); timers = []; items.forEach(function (li) { li.classList.remove('on', 'wait'); }); final.classList.remove('on'); }
+  function showAll() { items.forEach(function (li) { li.classList.add('on'); }); final.classList.add('on'); }
+  function play() {
+    if (running) return;
+    running = true; reset();
+    document.getElementById('replay').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+    playBtns.forEach(function (b) { b.disabled = true; });
+    var t = 400, n = 0;
+    items.forEach(function (li, i) {
+      var wait = +li.dataset.wait;
+      timers.push(setTimeout(function () {
+        li.classList.add('on', 'wait'); n++;
+        status.textContent = (li.dataset.label ? li.dataset.label + '…' : 'step ' + n + ' of ' + items.length);
+      }, t));
+      t += wait;
+      timers.push(setTimeout(function () { li.classList.remove('wait'); }, t));
+    });
+    timers.push(setTimeout(function () {
+      final.classList.add('on'); status.textContent = 'Done. About two minutes in real time, most of it PreForm generating supports.';
+      running = false; playBtns.forEach(function (b) { b.disabled = false; });
+    }, t + 300));
+  }
+  playBtns.forEach(function (b) { b.addEventListener('click', play); });
+  // Show everything by default (no JS surprises); the button replays it.
+  showAll();
+
+  // ---------- compare slider ----------
+  var range = document.getElementById('cmpRange'), after = document.getElementById('cmpAfter'), handle = document.getElementById('cmpHandle');
+  function setCmp(v) { after.style.clipPath = 'inset(0 0 0 ' + v + '%)'; handle.style.left = v + '%'; }
+  range.addEventListener('input', function () { setCmp(range.value); });
+  setCmp(50);
+
+  // ---------- explorer ----------
+  var runs = [
+    { id: 'to2000', label: 'Tough 2000 V2 · 0.1 mm', time: 6975, mat: '45.6 ml', matK: 'Resin, supports included', layers: '717', layersK: 'Layers at 0.1 mm', img: 'demo/turn-02.png',
+      note: 'The run at the top of the page. Stiff, sturdy engineering resin; Supports V2 settings.' },
+    { id: 'grey01', label: 'Grey V5 · 0.1 mm', time: 5375, mat: '41.6 ml', matK: 'Resin, supports included', layers: '717', layersK: 'Layers at 0.1 mm', img: 'demo/turn-02.png',
+      note: 'General-purpose resin prints the same 717 layers faster: about 26 minutes saved against Tough 2000.' },
+    { id: 'grey005', label: 'Grey V5 · 0.05 mm', time: 10208, mat: '43.1 ml', matK: 'Resin, supports included', layers: '1435', layersK: 'Layers at 0.05 mm', img: 'demo/turn-02.png',
+      note: 'Halving the layer height doubles the layer count and nearly doubles the time. Resin barely moves.' },
+    { id: 'rigid', label: 'Rigid 10K V1.1 · 0.1 mm', time: 6939, mat: '41.8 ml', matK: 'Resin, supports included', layers: '717', layersK: 'Layers at 0.1 mm', img: 'demo/turn-02.png',
+      note: 'Glass-filled, very stiff. Same layers, same tilt, validation clean.' },
+    { id: 'to1500', label: 'Tough 1500 V2 · 0.1 mm', time: 6770, mat: '44.6 ml', matK: 'Resin, supports included', layers: '717', layersK: 'Layers at 0.1 mm', img: 'demo/turn-02.png',
+      note: 'Springy, polypropylene-like. Same part, same layers, three minutes quicker than Tough 2000.' },
+    { id: 'clear', label: 'Clear V5 · 0.1 mm', time: 5164, mat: '42.1 ml', matK: 'Resin, supports included', layers: '717', layersK: 'Layers at 0.1 mm', img: 'demo/turn-02.png',
+      note: 'The fastest of the seven. Useful when you want to see the bearing seat through the wall.' },
+    { id: 'durable', label: 'Durable V2.1 · 0.1 mm', time: 7059, mat: '46.3 ml', matK: 'Resin, supports included', layers: '717', layersK: 'Layers at 0.1 mm', img: 'demo/turn-02.png',
+      note: 'Pliable and impact resistant. The slowest single-part run, a minute and a half behind Tough 2000.' },
+    { id: 'batch', label: '6 copies · Tough 2000 V2', time: 9403, mat: '273.8 ml', matK: 'Resin for all six', layers: '717', layersK: 'Layers, same as one part', img: 'demo/batch6.png',
+      note: '"Make five more and lay them out." Six parts on one platform take 2 h 37 min, about 26 minutes per part, because the Form 4 exposes a whole layer at once. All six validated clean.' },
+    { id: 'fuse', label: 'Fuse 1+ · Nylon 12 · 0.11 mm', time: 12561, mat: '33 g', matK: 'Sintered powder (34.6 ml)', layers: '338', layersK: 'Layers at 0.11 mm', img: 'demo/fuse.png',
+      note: 'SLS needs no supports, so the part lies flat in the powder. 1 h 50 min printing plus warm-up and cool-to-removal, 3 h 29 min to the door; then hours more to cool to room temperature. In real life you would fill the chamber, not print one part.' }
+  ];
+  function hm(s) { var h = Math.floor(s / 3600), m = Math.round((s % 3600) / 60); return (h ? h + ' h ' : '') + m + ' min'; }
+  var chips = document.getElementById('chips'), tbody = document.querySelector('#tbl tbody');
+  var el = { time: document.getElementById('sTime'), mat: document.getElementById('sMat'), layers: document.getElementById('sLayers'),
+             matK: document.getElementById('sMatK'), layersK: document.getElementById('sLayersK'), timeK: document.getElementById('sTimeK'),
+             note: document.getElementById('sNote'), img: document.getElementById('sImg') };
+  function flash(node, text) { node.textContent = text; node.classList.add('flash'); setTimeout(function () { node.classList.remove('flash'); }, 500); }
+  function select(id) {
+    var r = runs.find(function (x) { return x.id === id; });
+    Array.prototype.forEach.call(chips.children, function (c) { c.setAttribute('aria-pressed', c.dataset.id === id); });
+    Array.prototype.forEach.call(tbody.children, function (tr) { tr.classList.toggle('sel', tr.dataset.id === id); });
+    flash(el.time, hm(r.time)); flash(el.mat, r.mat); flash(el.layers, r.layers);
+    el.timeK.textContent = r.id === 'fuse' ? 'Start to door open' : 'Estimated print time';
+    el.matK.textContent = r.matK; el.layersK.textContent = r.layersK; el.note.textContent = r.note;
+    el.img.src = r.img; el.img.alt = r.label;
+  }
+  runs.forEach(function (r) {
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.dataset.id = r.id; b.textContent = r.label;
+    b.setAttribute('aria-pressed', 'false'); b.addEventListener('click', function () { select(r.id); }); chips.appendChild(b);
+    var tr = document.createElement('tr'); tr.dataset.id = r.id;
+    tr.innerHTML = '<td>' + r.label + '</td><td>' + hm(r.time) + '</td><td>' + r.mat + '</td>';
+    tr.addEventListener('click', function () { select(r.id); }); tbody.appendChild(tr);
+  });
+  select('to2000');
+
+  // ---------- install ----------
+  var cmds = { mac: 'curl -fsSL https://mkebiclioglu.github.io/formlabs-claude-skills/install.sh | sh',
+               win: 'irm https://mkebiclioglu.github.io/formlabs-claude-skills/install.ps1 | iex' };
+  var cmd = document.getElementById('cmd'), copy = document.getElementById('copy'), tabs = document.querySelectorAll('#install-box [role=tab]');
+  function setOS(os) { cmd.textContent = cmds[os]; tabs.forEach(function (t) { t.setAttribute('aria-selected', t.dataset.os === os); }); }
+  tabs.forEach(function (t) { t.addEventListener('click', function () { setOS(t.dataset.os); }); });
+  if (/Windows/i.test(navigator.userAgent)) setOS('win');
+  copy.addEventListener('click', function () {
+    var done = function () { copy.textContent = 'Copied'; copy.classList.add('done'); setTimeout(function () { copy.textContent = 'Copy'; copy.classList.remove('done'); }, 1600); };
+    if (navigator.clipboard) navigator.clipboard.writeText(cmd.textContent).then(done, function () { copy.textContent = 'Select and copy'; });
+    else copy.textContent = 'Select and copy';
+  });
+})();
+</script>
 </body>
 </html>
