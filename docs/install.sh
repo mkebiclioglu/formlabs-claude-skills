@@ -12,7 +12,7 @@
 
 set -eu
 
-TARBALL="https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.0/formlabs-local-mcp-1.0.0.tgz"
+TARBALL="https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.1/formlabs-local-mcp-1.0.1.tgz"
 
 say() { printf '%s\n' "$*"; }
 fail() { say "error: $*" >&2; exit 1; }
@@ -24,8 +24,11 @@ command -v claude >/dev/null 2>&1 || fail "The Claude Code CLI is required. Inst
 
 say "Adding the formlabs-claude-skills marketplace..."
 claude plugin marketplace add mkebiclioglu/formlabs-claude-skills >/dev/null 2>&1 || true
+claude plugin marketplace update formlabs-claude-skills >/dev/null 2>&1 || true
 say "Installing the formlabs plugin..."
 claude plugin install formlabs@formlabs-claude-skills --scope user
+# If it was already installed, bring it up to the marketplace's current version.
+claude plugin update formlabs@formlabs-claude-skills >/dev/null 2>&1 || true
 
 say "Installing PreFormServer from Formlabs (verifying signature)..."
 npx -y "$TARBALL" install-preform
