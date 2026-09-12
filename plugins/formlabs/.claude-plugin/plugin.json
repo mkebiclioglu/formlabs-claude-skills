@@ -1,0 +1,20 @@
+{
+  "name": "formlabs",
+  "description": "Prepare and print Formlabs jobs: import models, orient, support, lay out, validate, estimate, save .form files or send to a printer.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Mustafa Ebiclioglu",
+    "url": "https://github.com/mkebiclioglu"
+  },
+  "homepage": "https://mkebiclioglu.github.io/formlabs-claude-skills/",
+  "repository": "https://github.com/mkebiclioglu/formlabs-claude-skills",
+  "license": "MIT",
+  "keywords": [
+    "formlabs",
+    "3d-printing",
+    "preform",
+    "sla",
+    "sls",
+    "mcp"
+  ]
+}

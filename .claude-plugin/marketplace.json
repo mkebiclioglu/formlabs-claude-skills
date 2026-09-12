@@ -1,0 +1,24 @@
+{
+  "$schema": "https://code.claude.com/schemas/marketplace.json",
+  "name": "formlabs-claude-skills",
+  "description": "Prepare and print Formlabs jobs from Claude Code",
+  "owner": {
+    "name": "Mustafa Ebiclioglu",
+    "url": "https://github.com/mkebiclioglu"
+  },
+  "plugins": [
+    {
+      "name": "formlabs",
+      "displayName": "Formlabs",
+      "description": "Turn STL/OBJ files into supported, validated Formlabs print jobs and send them to your printer. Bundles the formlabs-local-mcp server and print-prep skills.",
+      "version": "1.0.0",
+      "source": "./plugins/formlabs",
+      "author": { "name": "Mustafa Ebiclioglu" },
+      "license": "MIT",
+      "homepage": "https://mkebiclioglu.github.io/formlabs-claude-skills/",
+      "repository": "https://github.com/mkebiclioglu/formlabs-claude-skills",
+      "keywords": ["formlabs", "3d-printing", "preform", "sla", "sls", "mcp"],
+      "category": "productivity"
+    }
+  ]
+}

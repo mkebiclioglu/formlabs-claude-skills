@@ -1,35 +1,36 @@
 # Contributing
 
-Skills are short Markdown files — easy to add or tweak.
+## Try changes locally
 
-## Where the skills live
+```bash
+claude --plugin-dir plugins/formlabs
+```
 
-Each skill is a directory under `.claude/skills/` with a `SKILL.md` file
-containing YAML frontmatter (`name`, `description`) and the skill body.
-Claude Code reads the description to decide when to invoke the skill, so
-make it specific about *when* the skill should apply.
+That loads the plugin from the working tree, MCP server included. Skills show up
+as `/formlabs:<name>`.
 
-## Authoring tips
+## Checks
 
-- **Lead with a precondition.** Both existing skills start with
-  `health_check`; if the MCP server isn't reachable, stop early.
-- **Surface decisions, not steps.** A skill is most useful when it captures
-  judgment the model wouldn't otherwise have (e.g. SLA → `auto_layout`,
-  SLS → `auto_pack`; default to REPAIR on imports).
-- **Avoid TaskCreate for short linear flows.** It's overhead and clutters
-  the response.
-- **Confirm before destructive actions.** Saving over an existing `.form`,
-  sending a print, etc. — always confirm.
+```bash
+python3 scripts/validate.py
+claude plugin validate .
+claude plugin validate plugins/formlabs
+```
 
-## Testing
+CI runs the first one on every push and PR.
 
-Drop the changed `.claude/skills/<name>/SKILL.md` into `~/.claude/skills/`,
-restart Claude Code, and exercise it with real prompts. There's no
-automated harness for skills today.
+## Writing skills
 
-## Questions vs. bug reports
+- `name` in the frontmatter must equal the directory name.
+- The `description` decides when Claude invokes the skill unprompted, so say
+  *when* it applies, not just what it does.
+- Capture judgment, not tool documentation: which layout tool for SLA versus
+  SLS, when to stop and ask, what to confirm before an irreversible step.
+- Keep confirmations for the destructive steps only (sending a print,
+  overwriting a file). Ask for missing inputs in one batched question.
 
-- [Discussions](https://github.com/mkebiclioglu/formlabs-claude-skills/discussions)
-  for open-ended questions, ideas, or show-and-tell.
-- [Issues](https://github.com/mkebiclioglu/formlabs-claude-skills/issues)
-  for reproducible bugs and concrete feature requests.
+## Bumping the MCP server
+
+`plugins/formlabs/.mcp.json` pins a release tag of formlabs-local-mcp. Update the
+tag, bump `version` in both `plugin.json` and `marketplace.json`, and run the
+checks above. Users get the new version on their next `/plugin update`.
