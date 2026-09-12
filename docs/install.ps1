@@ -10,7 +10,7 @@
 # Everything is pinned to a release; read on before you run it.
 
 $ErrorActionPreference = "Stop"
-$Tarball = "https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.0/formlabs-local-mcp-1.0.0.tgz"
+$Tarball = "https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.1/formlabs-local-mcp-1.0.1.tgz"
 
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
   throw "Node.js is required (20 or newer). Install it from https://nodejs.org, then run this again."
@@ -23,8 +23,11 @@ if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
 
 Write-Host "Adding the formlabs-claude-skills marketplace..."
 try { claude plugin marketplace add mkebiclioglu/formlabs-claude-skills | Out-Null } catch {}
+try { claude plugin marketplace update formlabs-claude-skills | Out-Null } catch {}
 Write-Host "Installing the formlabs plugin..."
 claude plugin install formlabs@formlabs-claude-skills --scope user
+# If it was already installed, bring it up to the marketplace's current version.
+try { claude plugin update formlabs@formlabs-claude-skills | Out-Null } catch {}
 
 Write-Host "Installing PreFormServer from Formlabs (verifying signature)..."
 npx -y $Tarball install-preform

@@ -155,13 +155,13 @@ For the plugin, put them in the <code>env</code> block of <code>~/.claude/settin
   "mcpServers": {
     "formlabs": {
       "command": "npx",
-      "args": ["-y", "https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.0/formlabs-local-mcp-1.0.0.tgz"]
+      "args": ["-y", "https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.1/formlabs-local-mcp-1.0.1.tgz"]
     }
   }
 }</code></pre>
 <p>Environment variables go in an <code>env</code> object next to <code>args</code>. For Claude Code without the plugin:</p>
-<pre><code>claude mcp add --scope user formlabs -- npx -y https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.0/formlabs-local-mcp-1.0.0.tgz</code></pre>
-<p>Then ask for <code>health_check</code>; if PreFormServer is missing the server offers to install it. From a shell: <code>npx -y https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.0/formlabs-local-mcp-1.0.0.tgz install-preform</code>, and <code>doctor</code> instead of <code>install-preform</code> shows what is installed and whether Formlabs has a newer release.</p>
+<pre><code>claude mcp add --scope user formlabs -- npx -y https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.1/formlabs-local-mcp-1.0.1.tgz</code></pre>
+<p>Then ask for <code>health_check</code>; if PreFormServer is missing the server offers to install it. From a shell: <code>npx -y https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.1/formlabs-local-mcp-1.0.1.tgz install-preform</code>, and <code>doctor</code> instead of <code>install-preform</code> shows what is installed and whether Formlabs has a newer release.</p>
 
 <h2 id="linux">Linux and remote</h2>
 <p>Formlabs ships PreFormServer for macOS and Windows only, so on Linux the server has to reach a PreFormServer somewhere else, or run the Windows build under Wine.</p>
