@@ -10,6 +10,7 @@ three skills, so one install gives Claude everything it needs, PreFormServer
 included.
 
 **Docs:** https://mkebiclioglu.github.io/formlabs-claude-skills/
+
 **See it work:** https://mkebiclioglu.github.io/formlabs-claude-skills/demo.html
 
 [![A bracket oriented and supported for the Form 4](docs/demo/x-end-idler.png)](https://mkebiclioglu.github.io/formlabs-claude-skills/demo.html)
