@@ -156,7 +156,7 @@
 <section class="hero">
   <div>
     <h1>A downloaded STL to a print-ready Form 4 job. One sentence.</h1>
-    <p class="lead">Open PreForm, import, orient, supports, check for cups, drain holes, estimate, upload. You have done it a thousand times. This page is a real run where Claude did all of it from one prompt in about two minutes, and the part on the right is the actual result. Drag it.</p>
+    <p class="lead">Open PreForm, import, orient, supports, check for cups, drain holes, estimate, upload. You have done it a thousand times. This page is a real run where Claude did all of it from one prompt in about two minutes, and the part on the right is the actual result. Drag it to look around.</p>
     <div class="cta">
       <a class="btn primary" href="#install">Install in one line</a>
       <button class="btn" id="playTop" type="button">▶ Replay the run</button>
@@ -311,29 +311,28 @@
 <script>
 (function () {
   // ---------- turntable ----------
-  var N = 24, frames = [], loaded = 0;
+  var N = 24, frames = [], ready = {};
   var turn = document.getElementById('turn'), img = document.getElementById('turnImg'), deg = document.getElementById('deg');
-  var idx = 2, auto = true, dragging = false, lastX = 0, acc = 0;
+  var idx = 2, dragging = false, lastX = 0, acc = 0;
   for (var i = 0; i < N; i++) { frames[i] = 'demo/turn-' + String(i).padStart(2, '0') + '.png'; }
-  function show(i) { idx = ((i % N) + N) % N; img.src = frames[idx]; deg.textContent = (idx * 15) + '°'; }
-  function preload() {
+  ready[idx] = true;
+  // Only ever swap to a frame that is already decoded, so dragging never shows a blank image.
+  function show(i) {
+    var j = ((i % N) + N) % N;
+    if (!ready[j]) return;
+    idx = j; img.src = frames[idx]; deg.textContent = (idx * 15) + '°';
+  }
+  (function preload() {
     var q = [];
     for (var k = 1; k < N; k++) q.push((idx + k) % N);
     (function next() {
       if (!q.length) return;
-      var im = new Image(); im.onload = im.onerror = function () { loaded++; next(); }; im.src = frames[q.shift()];
+      var n = q.shift(), im = new Image();
+      im.onload = function () { ready[n] = true; next(); }; im.onerror = next; im.src = frames[n];
     })();
-  }
-  if ('requestIdleCallback' in window) requestIdleCallback(preload); else setTimeout(preload, 300);
-  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var t0 = performance.now();
-  function tick(t) {
-    if (auto && !reduce && document.visibilityState === 'visible' && t - t0 > 220) { t0 = t; show(idx + 1); }
-    requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
+  })();
   turn.addEventListener('pointerdown', function (e) {
-    dragging = true; auto = false; lastX = e.clientX; acc = 0; turn.classList.add('touched'); turn.setPointerCapture(e.pointerId);
+    dragging = true; lastX = e.clientX; acc = 0; turn.classList.add('touched'); turn.setPointerCapture(e.pointerId);
   });
   turn.addEventListener('pointermove', function (e) {
     if (!dragging) return;
@@ -346,9 +345,10 @@
   turn.addEventListener('pointerup', up); turn.addEventListener('pointercancel', up);
   turn.tabIndex = 0;
   turn.addEventListener('keydown', function (e) {
-    if (e.key === 'ArrowLeft') { auto = false; show(idx - 1); e.preventDefault(); }
-    if (e.key === 'ArrowRight') { auto = false; show(idx + 1); e.preventDefault(); }
+    if (e.key === 'ArrowLeft') { show(idx - 1); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { show(idx + 1); e.preventDefault(); }
   });
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ---------- replay ----------
   var log = document.getElementById('log'), items = Array.prototype.slice.call(log.children);
