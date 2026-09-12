@@ -31,6 +31,8 @@ CI runs the first one on every push and PR.
 
 ## Bumping the MCP server
 
-`plugins/formlabs/.mcp.json` pins a release tag of formlabs-local-mcp. Update the
-tag, bump `version` in both `plugin.json` and `marketplace.json`, and run the
-checks above. Users get the new version on their next `/plugin update`.
+`plugins/formlabs/.mcp.json` pins a release tarball of formlabs-local-mcp, and so
+do `docs/install.sh`, `docs/install.ps1` and `docs/index.html`. Update all four to
+the new release URL, bump `version` in both `plugin.json` and `marketplace.json`,
+and run the checks above (the validator fails if they disagree). Users get the new
+version on their next `/plugin update`.
