@@ -9,11 +9,11 @@ This repo is a Claude Code **plugin marketplace**. The `formlabs` plugin bundles
 three skills, so one install gives Claude everything it needs, PreFormServer
 included.
 
-**Docs:** https://mkebiclioglu.github.io/formlabs-claude-skills/
+**See it work:** https://mkebiclioglu.github.io/formlabs-claude-skills/ (spin the real part, replay the run, compare materials)
 
-**See it work:** https://mkebiclioglu.github.io/formlabs-claude-skills/demo.html
+**Docs:** https://mkebiclioglu.github.io/formlabs-claude-skills/docs.html
 
-[![A bracket oriented and supported for the Form 4](docs/demo/x-end-idler.png)](https://mkebiclioglu.github.io/formlabs-claude-skills/demo.html)
+[![A bracket oriented and supported for the Form 4](docs/demo/x-end-idler.png)](https://mkebiclioglu.github.io/formlabs-claude-skills/)
 
 ## Install
 
@@ -54,7 +54,7 @@ plugins/formlabs/
   .claude-plugin/plugin.json      plugin manifest
   .mcp.json                       runs formlabs-local-mcp with npx, pinned to an exact npm version
   skills/{setup,prep,print}/      the skills
-docs/                             GitHub Pages site and the one-line installers
+docs/                             GitHub Pages site (index = demo landing page, docs.html = reference) and installers
 scripts/validate.py               CI checks for manifests, skills and pinned versions
 ```
 

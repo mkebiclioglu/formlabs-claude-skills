@@ -16,7 +16,8 @@ skills so they do it right next time.
 - **Propose a skill.** A workflow you repeat by hand in PreForm (a dental
   batch, a Fuse packing routine, a "reprint last job" flow) is a good candidate.
   Open an Idea in Discussions first.
-- **Docs.** Fix anything unclear in `README.md` or `docs/index.html`.
+- **Docs.** Fix anything unclear in `README.md`, `docs/docs.html` (reference) or
+  `docs/index.html` (the landing page and demo).
 - **New tools** live in the server repo, [formlabs-local-mcp](https://github.com/mkebiclioglu/formlabs-local-mcp).
 
 ## Try changes locally
@@ -62,7 +63,8 @@ See [SECURITY.md](SECURITY.md).
 ## Bumping the MCP server (maintainers)
 
 `plugins/formlabs/.mcp.json` pins an exact npm version of formlabs-local-mcp, and so
-do `docs/install.sh`, `docs/install.ps1`, `docs/index.html` and `docs/demo.html`.
+do `docs/install.sh`, `docs/install.ps1`, `docs/index.html` (the landing page) and
+`docs/docs.html` (the reference docs).
 Update all of them to the new version, bump `version` in both `plugin.json` and
 `marketplace.json`, and run the checks above (the validator fails if they disagree).
 Users get the new version on their next `/plugin update`.

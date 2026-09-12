@@ -10,4 +10,4 @@
 ## Checklist
 
 - [ ] Skill `description` still says *when* the skill applies, not only what it does
-- [ ] Docs (`README.md`, `docs/index.html`) updated if behaviour or install steps changed
+- [ ] Docs (`README.md`, `docs/docs.html`) updated if behaviour or install steps changed
