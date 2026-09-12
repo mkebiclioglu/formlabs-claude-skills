@@ -17,17 +17,19 @@ body:
       render: text
     validations:
       required: true
-  - type: input
-    id: mcp-version
+  - type: textarea
+    id: setup
     attributes:
-      label: formlabs-local-mcp version
-      placeholder: "0.1.1"
+      label: Output of `/formlabs:setup`
+      description: The check table it prints (plugin version, PreFormServer version, OS). Or paste `npx -y formlabs-local-mcp doctor`.
+      render: text
     validations:
       required: true
   - type: input
     id: client
     attributes:
-      label: MCP client
-      placeholder: "Claude Code 1.2.3 / Claude Desktop / Cursor / ..."
+      label: Claude Code version
+      description: From `claude --version`.
+      placeholder: "2.1.0"
     validations:
       required: true

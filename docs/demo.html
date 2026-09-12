@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo: a downloaded STL to a Form 4 job in one prompt</title>
+<meta name="description" content="A real run: a bracket downloaded from the internet, oriented, supported, validated and estimated for a Formlabs Form 4 by Claude in one sentence, then sent to the printer.">
+<meta property="og:title" content="From a downloaded STL to a Form 4 job in one prompt">
+<meta property="og:description" content="Watch Claude take a bracket from download to a validated, supported Formlabs print job, then send it to the printer after you say yes.">
+<meta property="og:image" content="https://mkebiclioglu.github.io/formlabs-claude-skills/demo/x-end-idler.png">
+<style>
+  :root {
+    --bg: #fbfaf7; --fg: #1c1b19; --muted: #5f5d58; --line: #e4e1da; --card: #ffffff;
+    --accent: #d9542b; --accent-fg: #ffffff; --code-bg: #f1efe9; --ok: #2f7d4f; --you: #e9efe6;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #141412; --fg: #ecebe6; --muted: #a29f97; --line: #2b2a26; --card: #1c1b19;
+            --accent: #f0764a; --accent-fg: #141412; --code-bg: #22211e; --ok: #6cc08b; --you: #1f2a1f; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg);
+         font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 960px; margin: 0 auto; padding: 24px 20px 80px; }
+  a { color: var(--accent); }
+  code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92em; }
+  code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+  pre { background: var(--code-bg); padding: 14px 16px; border-radius: 8px; overflow-x: auto; line-height: 1.45; }
+  pre code { background: none; padding: 0; }
+  h1 { font-size: 2.4rem; line-height: 1.1; margin: 0 0 14px; letter-spacing: -0.015em; }
+  h2 { font-size: 1.45rem; margin: 56px 0 14px; letter-spacing: -0.01em; }
+  h3 { font-size: 1.05rem; margin: 22px 0 8px; }
+  .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+         padding: 8px 0 18px; border-bottom: 1px solid var(--line); font-size: 0.95rem; }
+  .top nav { display: flex; gap: 16px; flex-wrap: wrap; }
+  .brand { font-weight: 700; color: var(--fg); text-decoration: none; }
+
+  .hero { display: grid; grid-template-columns: 1.15fr 1fr; gap: 32px; align-items: center; padding: 44px 0 20px; }
+  .hero p.lead { font-size: 1.15rem; color: var(--muted); margin: 0 0 22px; }
+  .hero img { width: 100%; height: auto; max-width: 420px; display: block; margin: 0 auto; }
+  .hero figcaption { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 8px; }
+  .cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+  .btn { display: inline-block; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-weight: 600;
+         border: 1px solid var(--line); color: var(--fg); background: var(--card); }
+  .btn.primary { background: var(--accent); color: var(--accent-fg); border-color: var(--accent); }
+  @media (max-width: 720px) { .hero { grid-template-columns: 1fr; } h1 { font-size: 1.9rem; } }
+
+  .chat { display: grid; gap: 12px; margin: 16px 0; }
+  .msg { padding: 14px 18px; border-radius: 12px; max-width: 46rem; }
+  .msg.you { background: var(--you); border-bottom-right-radius: 4px; justify-self: end; }
+  .msg.claude { background: var(--card); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+  .msg .who { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .msg p { margin: 0 0 8px; } .msg p:last-child { margin: 0; }
+  .msg ul { margin: 6px 0 0; padding-left: 20px; } .msg li { margin: 2px 0; }
+
+  .log { list-style: none; padding: 0; margin: 12px 0; border: 1px solid var(--line); border-radius: 10px; background: var(--card); overflow: hidden; }
+  .log li { display: grid; grid-template-columns: 200px 1fr; gap: 12px; padding: 9px 14px; border-top: 1px solid var(--line); font-size: 0.93rem; }
+  .log li:first-child { border-top: 0; }
+  .log code { background: none; padding: 0; color: var(--accent); }
+  .log .r { color: var(--fg); }
+  @media (max-width: 600px) { .log li { grid-template-columns: 1fr; gap: 2px; } }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 16px 0; }
+  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .stat .v { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.01em; }
+  .stat .k { color: var(--muted); font-size: 0.85rem; }
+  .ok { color: var(--ok); font-weight: 600; }
+
+  .steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
+  .steps > li { counter-increment: step; position: relative; padding: 0 0 22px 48px; }
+  .steps > li::before { content: counter(step); position: absolute; left: 0; top: 2px; width: 32px; height: 32px;
+    border-radius: 50%; background: var(--accent); color: var(--accent-fg); font-weight: 700;
+    display: flex; align-items: center; justify-content: center; }
+  .steps h3 { margin: 4px 0 6px; }
+  .steps p { margin: 0 0 8px; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 14px 0; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .card h3 { margin: 0 0 6px; font-size: 1rem; }
+  .card p { margin: 0; color: var(--muted); font-size: 0.95rem; }
+  .note { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; margin: 14px 0; color: var(--muted); font-size: 0.95rem; }
+  footer { margin-top: 60px; padding-top: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<main>
+<div class="top">
+  <a class="brand" href="./">Formlabs for Claude Code</a>
+  <nav>
+    <a href="./#install">Install</a>
+    <a href="./">Docs</a>
+    <a href="https://github.com/mkebiclioglu/formlabs-local-mcp">MCP server</a>
+    <a href="https://github.com/mkebiclioglu/formlabs-claude-skills">GitHub</a>
+  </nav>
+</div>
+
+<section class="hero">
+  <div>
+    <h1>A downloaded STL to a print-ready Form 4 job. One sentence.</h1>
+    <p class="lead">You know the routine: open PreForm, import, orient, generate supports, check for cups, add drain holes, read the estimate, upload, wait. This page is a real run where Claude did all of it from one prompt, and the only thing left for a human was to say "yes, send it".</p>
+    <div class="cta">
+      <a class="btn primary" href="./#install">Install in one line</a>
+      <a class="btn" href="#run">See the run</a>
+    </div>
+  </div>
+  <figure>
+    <img src="demo/x-end-idler.png" alt="The bracket tilted, supported and rafted for the Form 4, rendered by PreForm">
+    <figcaption>PreForm's own render of the result, saved by Claude as part of the job.</figcaption>
+  </figure>
+</section>
+
+<h2 id="run">The run</h2>
+<p>The part is an X-axis idler bracket from the Original Prusa i3 MK3S: two bearing bores, a belt slot, a few M3 holes. A typical "print me a stiff one of these in an engineering resin" job. It was downloaded from the internet the way any part is, dropped in a folder under the home directory, and handed to Claude Code:</p>
+
+<div class="chat">
+  <div class="msg you"><div class="who">You</div>
+    <p>Prep <code>~/formlabs-demo/x-end-idler.stl</code> for the Form 4 in Tough 2000 at 0.1 mm and save the job next to it.</p>
+  </div>
+  <div class="msg claude"><div class="who">Claude</div>
+    <p>Done. Form 4, Tough 2000 V2, 0.1 mm layers (Supports V2 settings).</p>
+    <ul>
+      <li>Auto-oriented and supported; 717 layers.</li>
+      <li>Validation: no cups, no unsupported minima, not undersupported, no seam line.</li>
+      <li>Print time about <strong>1 h 56 min</strong>. Resin <strong>45.6 ml</strong> total, 35.0 ml of that in the part.</li>
+      <li>Saved <code>~/formlabs-demo/x-end-idler.form</code> and a preview <code>x-end-idler.png</code>.</li>
+    </ul>
+    <p>Open the .form in PreForm to inspect it, or tell me which printer to send it to.</p>
+  </div>
+</div>
+
+<h3>What happened underneath</h3>
+<p>Every line below is a real tool call from the run, in order, with what came back. This is what the MCP server exposes to Claude; the skill tells it which calls to make and in what order.</p>
+<ul class="log">
+  <li><code>health_check</code><span class="r">PreFormServer 3.62.1 started on demand and answered.</span></li>
+  <li><code>list_materials</code><span class="r">Looked up the Form 4 list and picked <code>FLTO2002</code> (Tough 2000 V2) at 0.1 mm, Supports V2. No guessed codes.</span></li>
+  <li><code>create_scene</code><span class="r">Empty Form 4 scene, 200 × 125 × 210 mm build volume.</span></li>
+  <li><code>import_model</code><span class="r">Loaded the STL with mesh repair on; 37 × 40 × 58 mm, in bounds.</span></li>
+  <li><code>auto_orient</code><span class="r">Flipped the part over and tilted it about 11°, the orientation PreForm judges best for printing.</span></li>
+  <li><code>auto_support</code><span class="r">Supports and raft with PreForm's default density and touchpoint size.</span></li>
+  <li><code>auto_layout</code><span class="r">Centred on the platform.</span></li>
+  <li><code>get_print_validation</code><span class="r"><span class="ok">cups 0 · unsupported minima 0 · undersupported no · seam line no</span></span></li>
+  <li><code>estimate_print_time</code><span class="r">6975 s, so 1 h 56 min.</span></li>
+  <li><code>get_scene</code><span class="r">45.6 ml resin, of which 35.0 ml is the part itself.</span></li>
+  <li><code>save_form</code><span class="r">Wrote <code>x-end-idler.form</code> (1.0 MB) next to the STL.</span></li>
+  <li><code>save_screenshot</code><span class="r">Rendered the image at the top of this page.</span></li>
+</ul>
+
+<div class="stats">
+  <div class="stat"><div class="v">1 h 56 min</div><div class="k">Estimated print time</div></div>
+  <div class="stat"><div class="v">45.6 ml</div><div class="k">Tough 2000 V2, supports included</div></div>
+  <div class="stat"><div class="v">717</div><div class="k">Layers at 0.1 mm</div></div>
+  <div class="stat"><div class="v ok">Clean</div><div class="k">Cups, minima, supports, seam line</div></div>
+</div>
+<p>Wall-clock time from prompt to saved file: about two minutes, most of it PreForm generating supports. No window was opened.</p>
+
+<h2 id="send">Then: send it</h2>
+<p>Printing is the one step that cannot be undone, so the <code>/formlabs:print</code> skill always stops for an explicit yes. On a network with a Form 4, the exchange looks like this:</p>
+<div class="chat">
+  <div class="msg you"><div class="who">You</div><p>Send it to the Form 4 on the bench.</p></div>
+  <div class="msg claude"><div class="who">Claude</div>
+    <p>Found one printer: <strong>Form4-XXXXXX</strong>, idle, tank has Tough 2000 V2 loaded, matches the job.</p>
+    <p>Job <code>x-end-idler</code>: Form 4, Tough 2000 V2, 0.1 mm, 1 h 56 min, 45.6 ml, validation clean.</p>
+    <p><strong>Send it?</strong></p>
+  </div>
+  <div class="msg you"><div class="who">You</div><p>Yes.</p></div>
+  <div class="msg claude"><div class="who">Claude</div><p>Uploaded. The job is queued on Form4-XXXXXX; the printer will show it under Print Queue. It is not started automatically unless you ask.</p></div>
+</div>
+<div class="note">The prep above ran for real on 12 September 2026 with formlabs-local-mcp 1.0.4 and PreFormServer 3.62.1. There was no printer on that network, so the send step is shown the way the skill performs it (printer discovery, tank-material check, confirmation, upload through <code>print_to_printer</code>) with the serial blanked. Claude warns you if the tank material does not match the job.</div>
+
+<h2 id="steps">Do it yourself</h2>
+<ol class="steps">
+  <li>
+    <h3>Download a part</h3>
+    <p>Anything from Thingiverse, Printables, GrabCAD, or your CAD export: STL, OBJ, 3MF or STEP. Save it somewhere under your home folder; the server refuses paths outside the directories you allow. The part used here is <a href="https://github.com/prusa3d/Original-Prusa-i3/blob/MK3S/Printed-Parts/STL/x-end-idler.stl">x-end-idler.stl</a> from Prusa Research's open-hardware repository.</p>
+  </li>
+  <li>
+    <h3>Install the plugin (once)</h3>
+    <pre><code># macOS / Linux
+curl -fsSL https://mkebiclioglu.github.io/formlabs-claude-skills/install.sh | sh
+# Windows (PowerShell)
+irm https://mkebiclioglu.github.io/formlabs-claude-skills/install.ps1 | iex</code></pre>
+    <p>Needs Node.js 20+ and Claude Code. The script adds the plugin and downloads PreFormServer (Formlabs' headless PreForm) from Formlabs, checking Formlabs' code signature before installing it into a folder you own. No sudo, nothing global. Not on Claude Code? The MCP server runs on its own in Claude Desktop, Cursor and any MCP client: <code>npx -y formlabs-local-mcp@1.0.4</code>. <a href="./#other-clients">Details</a>.</p>
+  </li>
+  <li>
+    <h3>Ask</h3>
+    <p>In Claude Code, in plain words: "Prep <code>~/parts/bracket.stl</code> for the Form 4 in Tough 2000 and save it." If you leave out the material, Claude lists the ones your printer supports and asks. Say "print" instead of "prep" and it will find your printer and ask before uploading.</p>
+  </li>
+  <li>
+    <h3>Read the summary, open the .form if you want</h3>
+    <p>You get printer, material, layer height, print time, resin use, the validation result and the file paths. The .form opens in PreForm like any other; nothing about the job is hidden from you.</p>
+  </li>
+</ol>
+
+<h2 id="more">Where it starts to pay off</h2>
+<div class="cards">
+  <div class="card"><h3>Batches</h3><p>"Pack all twelve STLs in <code>~/parts/rev-c</code> onto the Fuse 1+ in Nylon 12 and tell me the total powder use." One prompt, one packed chamber, one estimate.</p></div>
+  <div class="card"><h3>Material what-ifs</h3><p>"Same part in Rigid 10K at 0.05 mm, how long?" A second scene and a second estimate in seconds, no re-importing.</p></div>
+  <div class="card"><h3>Hollowing and drain holes</h3><p>"Hollow it to 2 mm walls, add drain holes, re-validate." Cups get flagged and holes placed without a mouse.</p></div>
+  <div class="card"><h3>Reprints</h3><p>"Open <code>~/jobs/housing.form</code>, swap the model for <code>housing-v4.stl</code>, keep the orientation, re-estimate."</p></div>
+  <div class="card"><h3>Your fleet</h3><p>"Which printers are online and what is loaded in each tank?" Then send the job to the one with the right resin.</p></div>
+  <div class="card"><h3>Scripts, not clicks</h3><p>The same tools drive from any MCP client or your own automation. A nightly job that preps every new file in a folder is a prompt away.</p></div>
+</div>
+
+<h2 id="trust">What it will not do</h2>
+<ul>
+  <li>Send a job without your yes. <code>print_to_printer</code> is gated in the skill and flagged as destructive to the client.</li>
+  <li>Touch files outside the folders you allow (your home directory by default), or hidden folders like <code>~/.ssh</code>, whatever a prompt says.</li>
+  <li>Install PreFormServer from anywhere but <code>downloads.formlabs.com</code>, or without a valid Formlabs code signature.</li>
+  <li>See your Formlabs password. <code>login</code> reads it from the environment and never returns tokens to the model.</li>
+</ul>
+<p>More in the <a href="./#security">security section</a> of the docs and in <a href="https://github.com/mkebiclioglu/formlabs-local-mcp/blob/main/SECURITY.md">SECURITY.md</a>.</p>
+
+<h2 id="get">Get it</h2>
+<pre><code># macOS / Linux
+curl -fsSL https://mkebiclioglu.github.io/formlabs-claude-skills/install.sh | sh
+# Windows (PowerShell)
+irm https://mkebiclioglu.github.io/formlabs-claude-skills/install.ps1 | iex</code></pre>
+<p>Then open Claude Code and run <code>/formlabs:setup</code>. Tried it? Tell us what you printed in <a href="https://github.com/mkebiclioglu/formlabs-claude-skills/discussions/categories/show-and-tell">Show and tell</a>, and report anything that went sideways as an <a href="https://github.com/mkebiclioglu/formlabs-claude-skills/issues/new/choose">issue</a>. Both repos are MIT and take pull requests.</p>
+
+<footer>
+  MIT licensed. An independent project, not affiliated with or endorsed by Formlabs Inc. The Formlabs Local API is covered by the
+  <a href="https://formlabs.com/legal/formlabs-api-license-agreement/">Formlabs API License Agreement</a>. The demo part is from
+  <a href="https://github.com/prusa3d/Original-Prusa-i3">Original Prusa i3 MK3S</a> by Prusa Research (GPL).
+</footer>
+</main>
+</body>
+</html>
