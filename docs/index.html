@@ -59,7 +59,9 @@
   <h1>Print on your Formlabs from Claude Code</h1>
   <p class="lead">One plugin gives Claude the tools and the know-how to take STL files to a supported, validated job on your Form or Fuse printer. Install is one line; PreFormServer is fetched from Formlabs and signature-checked for you.</p>
   <div class="quote">"Prep ~/parts/bracket.stl for the Form 4 in Black V5 and save it as ~/jobs/bracket.form."</div>
+  <p><a href="demo.html"><strong>See it work:</strong></a> a real run taking a downloaded bracket to a validated, supported Form 4 job in one prompt, then to the printer.</p>
   <nav>
+    <a href="demo.html">Demo</a>
     <a href="#install">Install</a>
     <a href="#use">Use it</a>
     <a href="#skills">Skills</a>
@@ -68,6 +70,7 @@
     <a href="#linux">Linux and remote</a>
     <a href="#security">Security</a>
     <a href="#troubleshooting">Troubleshooting</a>
+    <a href="#contribute">Contribute</a>
     <a href="https://github.com/mkebiclioglu/formlabs-claude-skills">GitHub</a>
   </nav>
 </header>
@@ -181,7 +184,7 @@ For the plugin, put them in the <code>env</code> block of <code>~/.claude/settin
   <li><strong>Loopback only.</strong> Credentials are refused for any PreFormServer that is not on this machine unless you opt in.</li>
   <li><strong>Short-lived and quiet.</strong> PreFormServer runs only while Claude Code is connected, and its telemetry is switched off.</li>
   <li><strong>Remote mode</strong> uses ssh keys only (no password prompts), validates the host string so it can never be parsed as an ssh option, binds the forward to 127.0.0.1, and sanitizes staged file names.</li>
-  <li><strong>Small, pinned supply chain.</strong> The server has two runtime dependencies and a lockfile; the plugin pins a release tarball; GitHub Actions are pinned to commit SHAs. Tools declare MCP annotations, so clients can ask before <code>print_to_printer</code>, <code>save_form</code>, <code>install_preform_server</code> or any delete.</li>
+  <li><strong>Small, pinned supply chain.</strong> The server has two runtime dependencies and a lockfile; the plugin pins an exact npm version, published from CI with signed provenance; GitHub Actions are pinned to commit SHAs and CodeQL runs on every change. Tools declare MCP annotations, so clients can ask before <code>print_to_printer</code>, <code>save_form</code>, <code>install_preform_server</code> or any delete.</li>
 </ul>
 <div class="note"><strong>One thing to know:</strong> PreFormServer itself listens on all network interfaces, not only loopback, and offers no option to change that. On a shared or untrusted network keep your OS firewall on (macOS: System Settings, Network, Firewall) so other machines cannot reach port 44388.</div>
 
@@ -203,6 +206,14 @@ For the plugin, put them in the <code>env</code> block of <code>~/.claude/settin
 <p>Still stuck? Run <code>/formlabs:setup</code>, or open an issue on
 <a href="https://github.com/mkebiclioglu/formlabs-claude-skills/issues">formlabs-claude-skills</a> (plugin and skills) or
 <a href="https://github.com/mkebiclioglu/formlabs-local-mcp/issues">formlabs-local-mcp</a> (tools and PreFormServer).</p>
+
+<h2 id="contribute">Contribute</h2>
+<p>Both repositories are MIT and take issues and pull requests. The most useful things you can send are a transcript of a skill doing something wrong, and a note on which printer, material and OS you used, so behaviour can be fixed where it matters.</p>
+<ul>
+  <li><a href="https://github.com/mkebiclioglu/formlabs-claude-skills">formlabs-claude-skills</a>: the plugin, the skills, the install scripts and this site. <a href="https://github.com/mkebiclioglu/formlabs-claude-skills/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>.</li>
+  <li><a href="https://github.com/mkebiclioglu/formlabs-local-mcp">formlabs-local-mcp</a>: the MCP server, its 45 tools and the PreFormServer installer. <a href="https://github.com/mkebiclioglu/formlabs-local-mcp/blob/main/CONTRIBUTING.md">CONTRIBUTING</a>.</li>
+  <li>Questions, ideas and "here is what I printed" go in Discussions on either repo. Security reports go through GitHub's private reporting, see each repo's <code>SECURITY.md</code>.</li>
+</ul>
 
 <h2 id="update">Updating</h2>
 <p><code>/plugin update formlabs@formlabs-claude-skills</code> picks up new skills and the MCP server version the plugin pins. For a new PreFormServer release, ask Claude to run <code>install_preform_server</code> again (or run <code>install-preform</code> from a shell): it is a no-op when you already have the latest.</p>

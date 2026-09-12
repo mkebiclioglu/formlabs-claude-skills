@@ -10,6 +10,9 @@ three skills, so one install gives Claude everything it needs, PreFormServer
 included.
 
 **Docs:** https://mkebiclioglu.github.io/formlabs-claude-skills/
+**See it work:** https://mkebiclioglu.github.io/formlabs-claude-skills/demo.html
+
+[![A bracket oriented and supported for the Form 4](docs/demo/x-end-idler.png)](https://mkebiclioglu.github.io/formlabs-claude-skills/demo.html)
 
 ## Install
 
@@ -53,6 +56,14 @@ plugins/formlabs/
 docs/                             GitHub Pages site and the one-line installers
 scripts/validate.py               CI checks for manifests, skills and pinned versions
 ```
+
+## Contributing
+
+Issues and PRs welcome. The most useful contribution is a transcript of a skill
+doing the wrong thing, plus which printer and material you used; see
+[CONTRIBUTING.md](CONTRIBUTING.md). Questions and show-and-tell go in
+[Discussions](https://github.com/mkebiclioglu/formlabs-claude-skills/discussions).
+Security reports: [SECURITY.md](SECURITY.md).
 
 ## License
 
