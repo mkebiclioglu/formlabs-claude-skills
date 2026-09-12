@@ -9,6 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 errors: list[str] = []
+TARBALL = re.compile(r"^https://github\.com/mkebiclioglu/formlabs-local-mcp/releases/download/v(\d+\.\d+\.\d+)/formlabs-local-mcp-\1\.tgz$")
 
 
 def load(path: Path) -> dict:
@@ -24,6 +25,7 @@ for key in ("name", "owner", "plugins"):
     if key not in marketplace:
         errors.append(f"marketplace.json: missing {key}")
 
+pinned_urls: set[str] = set()
 for entry in marketplace.get("plugins", []):
     src = ROOT / entry.get("source", "")
     manifest = load(src / ".claude-plugin" / "plugin.json")
@@ -34,12 +36,13 @@ for entry in marketplace.get("plugins", []):
 
     mcp = load(src / ".mcp.json")
     for name, server in mcp.get("mcpServers", {}).items():
-        if server.get("command") != "uvx":
-            errors.append(f"{name}: expected uvx launcher")
+        if server.get("command") != "npx":
+            errors.append(f"{name}: expected npx launcher")
         args = server.get("args", [])
-        pinned = any(re.match(r"git\+https://.+@v\d+\.\d+\.\d+$", a) for a in args)
-        if not pinned:
-            errors.append(f"{name}: MCP server source must be pinned to a release tag")
+        if args[:1] != ["-y"] or len(args) < 2 or not TARBALL.match(args[1]):
+            errors.append(f"{name}: MCP server must be `npx -y <pinned release tarball>`")
+        else:
+            pinned_urls.add(args[1])
 
     skills = sorted((src / "skills").glob("*/SKILL.md"))
     if not skills:
@@ -56,6 +59,13 @@ for entry in marketplace.get("plugins", []):
             errors.append(f"{skill.relative_to(ROOT)}: frontmatter name must equal directory name")
         if not re.search(r"^description:\s*\S", fm, re.M):
             errors.append(f"{skill.relative_to(ROOT)}: missing description")
+
+# The install scripts and docs must pin the same tarball as the plugin.
+for f in ["docs/install.sh", "docs/install.ps1", "docs/index.html"]:
+    text = (ROOT / f).read_text()
+    for url in pinned_urls:
+        if url not in text:
+            errors.append(f"{f}: does not reference the pinned tarball {url}")
 
 if errors:
     print("\n".join(errors))

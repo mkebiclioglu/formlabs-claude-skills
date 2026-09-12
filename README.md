@@ -6,30 +6,38 @@ Print on your Formlabs printer from Claude Code.
 
 This repo is a Claude Code **plugin marketplace**. The `formlabs` plugin bundles the
 [formlabs-local-mcp](https://github.com/mkebiclioglu/formlabs-local-mcp) server and
-three skills, so one install gives Claude everything it needs.
+three skills, so one install gives Claude everything it needs, PreFormServer
+included.
 
-**Docs and step-by-step install:** https://mkebiclioglu.github.io/formlabs-claude-skills/
+**Docs:** https://mkebiclioglu.github.io/formlabs-claude-skills/
 
 ## Install
 
-1. Install [uv](https://docs.astral.sh/uv/) (`brew install uv`).
-2. Download [PreFormServer](https://formlabs.com/support/Formlabs-API-downloads-and-release-notes)
-   and move `PreFormServer.app` into `/Applications`.
-3. In Claude Code:
+Needs Node.js 20+ and Claude Code. One line:
+
+```bash
+curl -fsSL https://mkebiclioglu.github.io/formlabs-claude-skills/install.sh | sh
+```
+
+Windows: `irm https://mkebiclioglu.github.io/formlabs-claude-skills/install.ps1 | iex`
+
+Or inside Claude Code:
 
 ```
 /plugin marketplace add mkebiclioglu/formlabs-claude-skills
 /plugin install formlabs@formlabs-claude-skills
+/formlabs:setup
 ```
 
-Then run `/formlabs:setup` to confirm everything is wired up.
+`/formlabs:setup` installs PreFormServer for you (downloaded from Formlabs,
+signature-checked) after asking.
 
 ## Skills
 
 | Skill | What it does |
 |---|---|
-| `/formlabs:setup` | Checks uv, PreFormServer and the MCP server; tells you exactly what to fix. |
-| `/formlabs:prep` | Import, orient, support, lay out, validate, estimate, save a `.form` file plus a preview PNG. |
+| `/formlabs:setup` | Checks Node, the MCP server and PreFormServer; installs PreFormServer with your OK. |
+| `/formlabs:prep` | Import, orient, support, lay out, validate, drain holes, estimate, save a `.form` plus a preview PNG. |
 | `/formlabs:print` | Same pipeline, then uploads to your printer after you confirm. |
 
 Claude also picks these up on its own when you ask in plain language.
@@ -40,10 +48,10 @@ Claude also picks these up on its own when you ask in plain language.
 .claude-plugin/marketplace.json   the marketplace (lists the plugin below)
 plugins/formlabs/
   .claude-plugin/plugin.json      plugin manifest
-  .mcp.json                       launches formlabs-local-mcp with uvx, pinned to a release
+  .mcp.json                       runs formlabs-local-mcp with npx, pinned to a release tarball
   skills/{setup,prep,print}/      the skills
-docs/                             GitHub Pages site
-scripts/validate.py               CI checks for manifests and skills
+docs/                             GitHub Pages site and the one-line installers
+scripts/validate.py               CI checks for manifests, skills and pinned versions
 ```
 
 ## License

@@ -57,7 +57,7 @@
 <main>
 <header>
   <h1>Print on your Formlabs from Claude Code</h1>
-  <p class="lead">One plugin gives Claude the tools and the know-how to take STL files to a supported, validated job on your Form or Fuse printer.</p>
+  <p class="lead">One plugin gives Claude the tools and the know-how to take STL files to a supported, validated job on your Form or Fuse printer. Install is one line; PreFormServer is fetched from Formlabs and signature-checked for you.</p>
   <div class="quote">"Prep ~/parts/bracket.stl for the Form 4 in Black V5 and save it as ~/jobs/bracket.form."</div>
   <nav>
     <a href="#install">Install</a>
@@ -65,6 +65,7 @@
     <a href="#skills">Skills</a>
     <a href="#config">Configuration</a>
     <a href="#other-clients">Other MCP clients</a>
+    <a href="#linux">Linux and remote</a>
     <a href="#security">Security</a>
     <a href="#troubleshooting">Troubleshooting</a>
     <a href="https://github.com/mkebiclioglu/formlabs-claude-skills">GitHub</a>
@@ -72,37 +73,18 @@
 </header>
 
 <h2 id="install">Install</h2>
-<p>Three steps. The first two are one-time downloads; the third is two commands inside Claude Code.</p>
-<ol class="steps">
-  <li>
-    <h3>Install uv</h3>
-    <p>The MCP server runs with <a href="https://docs.astral.sh/uv/">uv</a>, so you never touch Python.</p>
-<pre><code># macOS
-brew install uv
-# macOS / Linux without Homebrew
-curl -LsSf https://astral.sh/uv/install.sh | sh
-# Windows
-winget install astral-sh.uv</code></pre>
-  </li>
-  <li>
-    <h3>Install PreFormServer</h3>
-    <p>PreFormServer is Formlabs' headless PreForm. Download the zip for your OS from the
-    <a href="https://formlabs.com/support/Formlabs-API-downloads-and-release-notes">Formlabs API downloads page</a>,
-    unzip it, and move <code>PreFormServer.app</code> into <code>/Applications</code> (on Windows: the
-    <code>PreFormServer</code> folder into <code>C:\Program Files\Formlabs</code>).</p>
-    <p>That is all. The plugin finds it there, starts it when Claude needs it, and stops it when Claude Code exits.
-    You can keep the regular PreForm app installed too.</p>
-  </li>
-  <li>
-    <h3>Add the plugin in Claude Code</h3>
+<p>You need <a href="https://nodejs.org">Node.js 20+</a> and <a href="https://claude.com/claude-code">Claude Code</a>. Then one line:</p>
+<pre><code># macOS / Linux
+curl -fsSL https://mkebiclioglu.github.io/formlabs-claude-skills/install.sh | sh
+# Windows (PowerShell)
+irm https://mkebiclioglu.github.io/formlabs-claude-skills/install.ps1 | iex</code></pre>
+<p>The script adds the plugin to Claude Code and downloads PreFormServer (Formlabs' headless PreForm, about 170 MB) from Formlabs, verifying Formlabs' code signature before installing it into a folder you own. No sudo, no Python, nothing global. <a href="install.sh">Read the script</a> first if you like; it is short.</p>
+<h3>Or, inside Claude Code</h3>
 <pre><code>/plugin marketplace add mkebiclioglu/formlabs-claude-skills
-/plugin install formlabs@formlabs-claude-skills</code></pre>
-    <p>Then run <code>/formlabs:setup</code>. It checks uv, PreFormServer and the MCP server and tells you exactly what to fix if anything is missing.</p>
-    <p>Prefer the terminal? <code>claude plugin marketplace add mkebiclioglu/formlabs-claude-skills</code> followed by
-    <code>claude plugin install formlabs@formlabs-claude-skills --scope user</code> does the same.</p>
-  </li>
-</ol>
-<div class="note"><strong>First run:</strong> the plugin's MCP server is downloaded and built by uv the first time Claude Code starts it (about a minute), and PreFormServer's first launch can take up to a minute while macOS verifies the app. After that both start in seconds.</div>
+/plugin install formlabs@formlabs-claude-skills
+/formlabs:setup</code></pre>
+<p><code>/formlabs:setup</code> notices that PreFormServer is missing, asks you, and installs it through the <code>install_preform_server</code> tool. Same download, same signature check.</p>
+<div class="note"><strong>First run:</strong> the plugin's MCP server is fetched by <code>npx</code> the first time Claude Code starts it (a few seconds), and PreFormServer's first launch can take up to a minute while macOS verifies the app. After that both start in seconds. Already have <code>PreFormServer.app</code> in <code>/Applications</code>? It is used as is.</div>
 
 <h2 id="use">Use it</h2>
 <p>Just ask. Claude picks the right skill from plain language, or you can invoke one directly.</p>
@@ -118,11 +100,11 @@ winget install astral-sh.uv</code></pre>
 
 <h2 id="skills">What's inside</h2>
 <div class="cards">
-  <div class="card"><h3>/formlabs:setup</h3><p>Checks uv, PreFormServer and the MCP server, then tells you what to fix.</p></div>
+  <div class="card"><h3>/formlabs:setup</h3><p>Checks Node, the MCP server and PreFormServer; installs PreFormServer with your OK.</p></div>
   <div class="card"><h3>/formlabs:prep</h3><p>Import, orient, support, lay out, validate, drain holes, estimate, save a <code>.form</code> plus a preview PNG.</p></div>
   <div class="card"><h3>/formlabs:print</h3><p>The same pipeline, then uploads to your printer after you confirm.</p></div>
 </div>
-<p>Under the skills sits the <a href="https://github.com/mkebiclioglu/formlabs-local-mcp">formlabs-local-mcp</a> server: 40-odd typed tools covering scenes, models, orientation, supports, layout and packing, hollowing, labels, drain holes, every validation check (cups, minima, supportedness, thin walls, interferences), print-time estimates, screenshots, printer discovery and printing. It tracks Formlabs Local API 0.9.29.</p>
+<p>Under the skills sits the <a href="https://github.com/mkebiclioglu/formlabs-local-mcp">formlabs-local-mcp</a> server: 45 typed tools covering scenes, models, orientation, supports, layout and packing, hollowing, labels, drain holes, every validation check (cups, minima, supportedness, thin walls, interferences), print-time estimates, screenshots, printer discovery and printing, plus a verified PreFormServer installer. It tracks Formlabs Local API 0.9.29.</p>
 <div class="diagram">You
  │  "prep this STL for the Form 4"
  ▼
@@ -132,7 +114,7 @@ Claude Code ──► /formlabs:prep   (skill: the workflow and the judgment cal
                 formlabs MCP server   (typed tools, path guard rails)
                       │  HTTP on localhost
                       ▼
-                PreFormServer   (Formlabs' headless PreForm, started on demand)
+                PreFormServer   (Formlabs' headless PreForm, installed and started on demand)
                       │
                       ▼
                 your printer</div>
@@ -142,8 +124,9 @@ Claude Code ──► /formlabs:prep   (skill: the workflow and the judgment cal
 For the plugin, put them in the <code>env</code> block of <code>~/.claude/settings.json</code>; Claude Code passes that block to every subprocess, the MCP server included:</p>
 <pre><code>{
   "env": {
-    "PREFORM_SERVER_PATH": "/Volumes/Tools/PreFormServer.app/Contents/MacOS/PreFormServer",
-    "FORMLABS_ALLOWED_PATHS": "/Users/me/prints:/Volumes/Parts"
+    "FORMLABS_ALLOWED_PATHS": "/Users/me/prints:/Volumes/Parts",
+    "FORMLABS_USERNAME": "me@example.com",
+    "FORMLABS_PASSWORD": "..."
   }
 }</code></pre>
 <div class="tablewrap">
@@ -160,35 +143,45 @@ For the plugin, put them in the <code>env</code> block of <code>~/.claude/settin
   <tr><td><code>FORMLABS_ALLOW_HIDDEN_PATHS</code></td><td><code>0</code></td><td>Allow paths through dot-directories like <code>~/.cache</code>.</td></tr>
   <tr><td><code>FORMLABS_USERNAME</code>, <code>FORMLABS_PASSWORD</code></td><td>unset</td><td>Formlabs account for remote printing, Fleet Control and Dashboard printers. <code>FORMLABS_ACCESS_TOKEN</code> works too.</td></tr>
   <tr><td><code>FORMLABS_ALLOW_REMOTE_LOGIN</code></td><td><code>0</code></td><td>Allow <code>login</code> against a non-loopback <code>PREFORM_SERVER_URL</code>.</td></tr>
+  <tr><td><code>PREFORM_REMOTE_HOST</code></td><td>unset</td><td>Run PreFormServer on another machine over ssh, e.g. <code>me@studio-mac.local</code>. See <a href="#linux">Linux and remote</a>.</td></tr>
+  <tr><td><code>PREFORM_REMOTE_PORT</code>, <code>PREFORM_REMOTE_SERVER_PATH</code>, <code>PREFORM_REMOTE_SPAWN</code></td><td><code>22</code>, well-known paths, <code>1</code></td><td>ssh port, PreFormServer path on the remote host, and whether to start it there or only tunnel.</td></tr>
+  <tr><td><code>PREFORM_LAUNCHER</code></td><td><code>wine</code> on Linux</td><td>Command prefix to start PreFormServer, e.g. <code>xvfb-run -a wine</code>.</td></tr>
 </table>
 </div>
 
 <h2 id="other-clients">Other MCP clients</h2>
-<p>The MCP server works on its own in Claude Desktop, Cursor, VS Code, Windsurf and anything else that speaks MCP over stdio. You lose the skills but keep every tool. Add this to the client's MCP config (<code>claude_desktop_config.json</code>, <code>.cursor/mcp.json</code>, and so on):</p>
+<p>The MCP server works on its own in Claude Desktop, Cursor, VS Code, Windsurf and anything else that speaks MCP over stdio. You lose the skills but keep every tool. It only needs Node.js. Add this to the client's MCP config (<code>claude_desktop_config.json</code>, <code>.cursor/mcp.json</code>, and so on):</p>
 <pre><code>{
   "mcpServers": {
     "formlabs": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/mkebiclioglu/formlabs-local-mcp@v0.2.1",
-        "formlabs-local-mcp"
-      ]
+      "command": "npx",
+      "args": ["-y", "https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.0/formlabs-local-mcp-1.0.0.tgz"]
     }
   }
 }</code></pre>
 <p>Environment variables go in an <code>env</code> object next to <code>args</code>. For Claude Code without the plugin:</p>
-<pre><code>claude mcp add --scope user formlabs -- \
-  uvx --from git+https://github.com/mkebiclioglu/formlabs-local-mcp@v0.2.1 formlabs-local-mcp</code></pre>
+<pre><code>claude mcp add --scope user formlabs -- npx -y https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.0/formlabs-local-mcp-1.0.0.tgz</code></pre>
+<p>Then ask for <code>health_check</code>; if PreFormServer is missing the server offers to install it. From a shell: <code>npx -y https://github.com/mkebiclioglu/formlabs-local-mcp/releases/download/v1.0.0/formlabs-local-mcp-1.0.0.tgz install-preform</code>, and <code>doctor</code> instead of <code>install-preform</code> shows what is installed and whether Formlabs has a newer release.</p>
+
+<h2 id="linux">Linux and remote</h2>
+<p>Formlabs ships PreFormServer for macOS and Windows only, so on Linux the server has to reach a PreFormServer somewhere else, or run the Windows build under Wine.</p>
+<h3>Remote mode (recommended)</h3>
+<p>Run PreFormServer on any Mac or Windows machine on your network and let the MCP server on Linux drive it over ssh:</p>
+<pre><code>PREFORM_REMOTE_HOST=me@studio-mac.local</code></pre>
+<p>One ssh session, keys only, forwards a loopback port and starts PreFormServer on the remote machine so it stops when the MCP server does. Input files are copied over with <code>scp</code> into a per-session staging folder under the remote user's home; <code>.form</code> files and screenshots are copied back. The remote host needs PreFormServer installed (run <code>install-preform</code> there) and a POSIX shell over ssh. For a Windows remote host set <code>PREFORM_REMOTE_SPAWN=0</code> and start PreFormServer yourself. Remote mode also works from a Mac to another Mac, for instance a Mac mini next to the printers.</p>
+<h3>Wine (experimental)</h3>
+<p><code>install-preform</code> on Linux fetches the Windows build, verifies its Authenticode signature with <code>osslsigncode</code>, and the server launches it with <code>wine</code>. Set <code>PREFORM_LAUNCHER="xvfb-run -a wine"</code> if it needs a display. A weekly <a href="https://github.com/mkebiclioglu/formlabs-local-mcp/actions/workflows/integration.yml">CI job</a> runs this path; check it to see whether it currently works before relying on it.</p>
 
 <h2 id="security">Security</h2>
 <p>PreFormServer is a plain-HTTP server with no authentication that reads and writes files as you. The MCP server is built to keep that surface small:</p>
 <ul>
+  <li><strong>Verified installs.</strong> The installer only downloads over HTTPS from <code>downloads.formlabs.com</code> with Formlabs' release path layout, refuses redirects elsewhere, scans the archive for path traversal before extracting, and checks the code signature before anything is moved into place: Developer ID team <code>KVPE3R79SR</code> plus notarization on macOS, a valid Authenticode signature from Formlabs on Windows, <code>osslsigncode</code> on Linux. A failed check leaves the previous install untouched. The one-line install scripts are pinned to a release and read from this site over HTTPS.</li>
   <li><strong>Path guard rails.</strong> Every file path Claude passes must be absolute, resolve (symlinks included) to somewhere under <code>FORMLABS_ALLOWED_PATHS</code> (your home directory by default), avoid hidden directories such as <code>~/.ssh</code>, and carry the right extension: models in, <code>.form</code>/<code>.png</code>/<code>.fps</code> out. A prompt injection cannot turn <code>save_form</code> into a way to write arbitrary files.</li>
   <li><strong>Credentials never enter the chat.</strong> <code>login</code> takes no arguments. It reads your Formlabs account from the environment and returns only your username, never tokens.</li>
   <li><strong>Loopback only.</strong> Credentials are refused for any PreFormServer that is not on this machine unless you opt in.</li>
   <li><strong>Short-lived and quiet.</strong> PreFormServer runs only while Claude Code is connected, and its telemetry is switched off.</li>
-  <li><strong>Pinned and reviewed.</strong> The plugin pins a release tag of the MCP server; dependencies have upper bounds and Dependabot updates. Tools declare MCP annotations, so clients can ask before <code>print_to_printer</code>, <code>save_form</code> or any delete.</li>
+  <li><strong>Remote mode</strong> uses ssh keys only (no password prompts), validates the host string so it can never be parsed as an ssh option, binds the forward to 127.0.0.1, and sanitizes staged file names.</li>
+  <li><strong>Small, pinned supply chain.</strong> The server has two runtime dependencies and a lockfile; the plugin pins a release tarball; GitHub Actions are pinned to commit SHAs. Tools declare MCP annotations, so clients can ask before <code>print_to_printer</code>, <code>save_form</code>, <code>install_preform_server</code> or any delete.</li>
 </ul>
 <div class="note"><strong>One thing to know:</strong> PreFormServer itself listens on all network interfaces, not only loopback, and offers no option to change that. On a shared or untrusted network keep your OS firewall on (macOS: System Settings, Network, Firewall) so other machines cannot reach port 44388.</div>
 
@@ -196,13 +189,14 @@ For the plugin, put them in the <code>env</code> block of <code>~/.claude/settin
 <div class="tablewrap">
 <table>
   <tr><th>Symptom</th><th>Cause and fix</th></tr>
-  <tr><td>No <code>formlabs</code> tools; <code>/mcp</code> shows the server failed</td><td>uv is not installed or not on PATH. Install it, then restart Claude Code.</td></tr>
-  <tr><td><code>health_check</code> says PreFormServer is not installed</td><td>Put <code>PreFormServer.app</code> in <code>/Applications</code>, or set <code>PREFORM_SERVER_PATH</code>.</td></tr>
-  <tr><td>First call hangs for a minute</td><td>Normal on the first run: uv builds the server, then macOS verifies PreFormServer. Later runs are fast.</td></tr>
+  <tr><td>No <code>formlabs</code> tools; <code>/mcp</code> shows the server failed</td><td>Node.js 20+ is missing or not on PATH. Install it, then restart Claude Code.</td></tr>
+  <tr><td><code>health_check</code> says PreFormServer is not installed</td><td>Run <code>/formlabs:setup</code> and say yes to the install, or run the one-line installer above.</td></tr>
+  <tr><td>First call hangs for a minute</td><td>Normal on the first run: <code>npx</code> fetches the server, then macOS verifies PreFormServer. Later runs are fast.</td></tr>
   <tr><td><code>INPUT_ERROR: Scene type not supported</code></td><td>That printer, material and layer height combination does not exist. Claude should call <code>list_materials</code> and use one of the listed settings.</td></tr>
   <tr><td><code>IMPORT_PRODUCED_EMPTY_SCENE</code></td><td>The mesh could not be parsed even with repair. Open it in PreForm to see why.</td></tr>
   <tr><td>Path "is outside the allowed directories"</td><td>By design. Move the file under your home directory or extend <code>FORMLABS_ALLOWED_PATHS</code>.</td></tr>
   <tr><td>Printer not found</td><td>Run discovery again, check the printer is on the same network, or give its IP address.</td></tr>
+  <tr><td>Installer says the signature check failed</td><td>By design it refuses to install. Report it; do not bypass. Formlabs may have changed signing identity, or the download was tampered with.</td></tr>
   <tr><td>401 on remote printing</td><td>Set <code>FORMLABS_USERNAME</code> and <code>FORMLABS_PASSWORD</code>, then ask Claude to log in.</td></tr>
 </table>
 </div>
@@ -211,7 +205,7 @@ For the plugin, put them in the <code>env</code> block of <code>~/.claude/settin
 <a href="https://github.com/mkebiclioglu/formlabs-local-mcp/issues">formlabs-local-mcp</a> (tools and PreFormServer).</p>
 
 <h2 id="update">Updating</h2>
-<p><code>/plugin update formlabs@formlabs-claude-skills</code> picks up new skills and the MCP server version the plugin pins. New PreFormServer releases are a fresh download from Formlabs; drop the new app over the old one.</p>
+<p><code>/plugin update formlabs@formlabs-claude-skills</code> picks up new skills and the MCP server version the plugin pins. For a new PreFormServer release, ask Claude to run <code>install_preform_server</code> again (or run <code>install-preform</code> from a shell): it is a no-op when you already have the latest.</p>
 
 <footer>
   MIT licensed. An independent project, not affiliated with or endorsed by Formlabs Inc. The Formlabs Local API is covered by the
