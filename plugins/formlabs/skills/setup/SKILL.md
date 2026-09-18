@@ -34,6 +34,14 @@ before it is installed into a folder the user owns. Ask for permission, then cal
 If `mode` is `remote`, PreFormServer runs on another machine over ssh; the install
 step applies there, not here.
 
+On Linux, `executable` ends in `.exe`: PreFormServer is the Windows build run
+through Wine (`launcher`), which needs Wine 11.5 or newer from WineHQ and a display
+(`PREFORM_LAUNCHER="xvfb-run -a wine"` when headless). `path_style` is `wine`
+then, and file paths are rewritten as `Z:/...` automatically. If `base_url` points
+at a preform-linux container instead, `path_map` must map the shared directory
+(for example `~/jobs` to `Z:/jobs`); an empty `path_map` with `path_style`
+`native` means imports will fail with a file-not-found error.
+
 ## 3. Start it
 
 Call `health_check`. It starts PreFormServer and returns its version. The first

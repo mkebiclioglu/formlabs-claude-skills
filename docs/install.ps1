@@ -10,7 +10,7 @@
 # Everything is pinned to a release; read on before you run it.
 
 $ErrorActionPreference = "Stop"
-$Package = "formlabs-local-mcp@1.0.5"
+$Package = "formlabs-local-mcp@1.0.6"
 
 if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
   throw "Node.js is required (20 or newer). Install it from https://nodejs.org, then run this again."
