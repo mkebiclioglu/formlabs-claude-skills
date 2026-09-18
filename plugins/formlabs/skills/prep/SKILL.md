@@ -24,7 +24,11 @@ Ask for all missing items in ONE question, not one at a time:
    `list_printer_types` to get its `machine_type`, then
    `list_materials(machine_type=...)` and use the exact `scene_settings` of the
    material and layer thickness they want. If they name no material, list the
-   options and ask. Never invent codes.
+   options and ask. Never invent codes. Entries with an `unlisted` note (the
+   Fuse X1 in PreFormServer 3.63.0) are accepted by `create_scene` even though
+   the server does not list them; the Fuse X1 has one setting (`FUSX-1-0`,
+   `FLP12G01`, 0.11 mm) and refuses `auto_pack`, so leave models where
+   `import_model` places them.
 3. **Output path**, ending in `.form`. Default: same folder and basename as the
    first model. Confirm before overwriting an existing file.
 
