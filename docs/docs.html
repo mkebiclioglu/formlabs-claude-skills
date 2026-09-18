@@ -100,7 +100,8 @@ irm https://mkebiclioglu.github.io/formlabs-claude-skills/install.ps1 | iex</cod
   <li>"Open <code>~/jobs/old.form</code>, swap the part for <code>~/parts/v2.stl</code>, and re-estimate."</li>
 </ul>
 <p>Every flow ends with a summary: printer, material and layer height, print time, resin or powder usage, validation warnings, and the files written. Sending a job to a printer always waits for your explicit yes.</p>
-<p>No printer yet? PreFormServer ships a built-in virtual printer for every model (<code>list_devices</code> shows them as <code>VIRTUAL</code>: <code>Form 4</code>, <code>Form 4L</code>, <code>Fuse 1+</code> and so on). "Send it to the virtual Form 4" runs the whole job upload without hardware and comes back with a job id, so a workflow can be rehearsed end to end. The virtual SLS printers refuse jobs in the current PreFormServer, so the dry run is SLA only.</p>
+<p>No printer yet? PreFormServer ships a built-in virtual printer for every model (<code>list_devices</code> shows them as <code>VIRTUAL</code>: <code>Form 4</code>, <code>Form 4L</code>, <code>Fuse 1+</code> and so on). "Send it to the virtual Form 4" runs the whole job upload without hardware and comes back with a job id, so a workflow can be rehearsed end to end. For the network path too, <a href="https://github.com/mkebiclioglu/preform-linux/tree/main/sim">preform-linux's simulated printer</a> is a fake Form 4 on the LAN that PreFormServer discovers by IP, lists with tank and cartridge, and uploads real jobs to. The virtual and simulated SLS printers refuse jobs in the current PreFormServer, so those dry runs are SLA only.</p>
+<p>Fuse X1: PreFormServer 3.63.0 prepares jobs for it (<code>FUSX-1-0</code>, Nylon 12 GF <code>FLP12G01</code> at 0.11 mm, the one setting it ships) but leaves the family out of its materials list; <code>list_printer_types</code> adds it with an <code>unlisted</code> note. No other material and no <code>auto_pack</code> yet; models stay where <code>import_model</code> places them.</p>
 
 <h2 id="skills">What's inside</h2>
 <div class="cards">
@@ -161,13 +162,13 @@ For the plugin, put them in the <code>env</code> block of <code>~/.claude/settin
   "mcpServers": {
     "formlabs": {
       "command": "npx",
-      "args": ["-y", "formlabs-local-mcp@1.0.7"]
+      "args": ["-y", "formlabs-local-mcp@1.0.8"]
     }
   }
 }</code></pre>
 <p>Environment variables go in an <code>env</code> object next to <code>args</code>. For Claude Code without the plugin:</p>
-<pre><code>claude mcp add --scope user formlabs -- npx -y formlabs-local-mcp@1.0.7</code></pre>
-<p>Then ask for <code>health_check</code>; if PreFormServer is missing the server offers to install it. From a shell: <code>npx -y formlabs-local-mcp@1.0.7 install-preform</code>, and <code>doctor</code> instead of <code>install-preform</code> shows what is installed and whether Formlabs has a newer release. The package is published on <a href="https://www.npmjs.com/package/formlabs-local-mcp">npm</a> with signed build provenance from GitHub Actions.</p>
+<pre><code>claude mcp add --scope user formlabs -- npx -y formlabs-local-mcp@1.0.8</code></pre>
+<p>Then ask for <code>health_check</code>; if PreFormServer is missing the server offers to install it. From a shell: <code>npx -y formlabs-local-mcp@1.0.8 install-preform</code>, and <code>doctor</code> instead of <code>install-preform</code> shows what is installed and whether Formlabs has a newer release. The package is published on <a href="https://www.npmjs.com/package/formlabs-local-mcp">npm</a> with signed build provenance from GitHub Actions.</p>
 
 <h2 id="linux">Linux and remote</h2>
 <p>Formlabs ships PreFormServer for macOS and Windows only. On Linux the server can talk to PreFormServer running under Wine, in a container or on the same machine, or drive one on a Mac or Windows box over ssh.</p>
