@@ -161,13 +161,13 @@ For the plugin, put them in the <code>env</code> block of <code>~/.claude/settin
   "mcpServers": {
     "formlabs": {
       "command": "npx",
-      "args": ["-y", "formlabs-local-mcp@1.0.6"]
+      "args": ["-y", "formlabs-local-mcp@1.0.7"]
     }
   }
 }</code></pre>
 <p>Environment variables go in an <code>env</code> object next to <code>args</code>. For Claude Code without the plugin:</p>
-<pre><code>claude mcp add --scope user formlabs -- npx -y formlabs-local-mcp@1.0.6</code></pre>
-<p>Then ask for <code>health_check</code>; if PreFormServer is missing the server offers to install it. From a shell: <code>npx -y formlabs-local-mcp@1.0.6 install-preform</code>, and <code>doctor</code> instead of <code>install-preform</code> shows what is installed and whether Formlabs has a newer release. The package is published on <a href="https://www.npmjs.com/package/formlabs-local-mcp">npm</a> with signed build provenance from GitHub Actions.</p>
+<pre><code>claude mcp add --scope user formlabs -- npx -y formlabs-local-mcp@1.0.7</code></pre>
+<p>Then ask for <code>health_check</code>; if PreFormServer is missing the server offers to install it. From a shell: <code>npx -y formlabs-local-mcp@1.0.7 install-preform</code>, and <code>doctor</code> instead of <code>install-preform</code> shows what is installed and whether Formlabs has a newer release. The package is published on <a href="https://www.npmjs.com/package/formlabs-local-mcp">npm</a> with signed build provenance from GitHub Actions.</p>
 
 <h2 id="linux">Linux and remote</h2>
 <p>Formlabs ships PreFormServer for macOS and Windows only. On Linux the server can talk to PreFormServer running under Wine, in a container or on the same machine, or drive one on a Mac or Windows box over ssh.</p>

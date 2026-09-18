@@ -3,7 +3,7 @@
     "formlabs": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "formlabs-local-mcp@1.0.6"]
+      "args": ["-y", "formlabs-local-mcp@1.0.7"]
     }
   }
 }
