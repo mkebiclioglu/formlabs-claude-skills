@@ -100,6 +100,7 @@ irm https://mkebiclioglu.github.io/formlabs-claude-skills/install.ps1 | iex</cod
   <li>"Open <code>~/jobs/old.form</code>, swap the part for <code>~/parts/v2.stl</code>, and re-estimate."</li>
 </ul>
 <p>Every flow ends with a summary: printer, material and layer height, print time, resin or powder usage, validation warnings, and the files written. Sending a job to a printer always waits for your explicit yes.</p>
+<p>No printer yet? PreFormServer ships a built-in virtual printer for every model (<code>list_devices</code> shows them as <code>VIRTUAL</code>: <code>Form 4</code>, <code>Form 4L</code>, <code>Fuse 1+</code> and so on). "Send it to the virtual Form 4" runs the whole job upload without hardware and comes back with a job id, so a workflow can be rehearsed end to end. The virtual SLS printers refuse jobs in the current PreFormServer, so the dry run is SLA only.</p>
 
 <h2 id="skills">What's inside</h2>
 <div class="cards">
