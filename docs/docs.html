@@ -149,6 +149,8 @@ For the plugin, put them in the <code>env</code> block of <code>~/.claude/settin
   <tr><td><code>PREFORM_REMOTE_HOST</code></td><td>unset</td><td>Run PreFormServer on another machine over ssh, e.g. <code>me@studio-mac.local</code>. See <a href="#linux">Linux and remote</a>.</td></tr>
   <tr><td><code>PREFORM_REMOTE_PORT</code>, <code>PREFORM_REMOTE_SERVER_PATH</code>, <code>PREFORM_REMOTE_SPAWN</code></td><td><code>22</code>, well-known paths, <code>1</code></td><td>ssh port, PreFormServer path on the remote host, and whether to start it there or only tunnel.</td></tr>
   <tr><td><code>PREFORM_LAUNCHER</code></td><td><code>wine</code> on Linux</td><td>Command prefix to start PreFormServer, e.g. <code>xvfb-run -a wine</code>.</td></tr>
+  <tr><td><code>PREFORM_SERVER_PATH_STYLE</code></td><td><code>auto</code></td><td><code>wine</code> writes file paths as Wine's <code>Z:/...</code> view of this machine; <code>native</code> sends them as-is. Auto picks <code>wine</code> when the server starts PreFormServer through Wine.</td></tr>
+  <tr><td><code>PREFORM_PATH_MAP</code></td><td>unset</td><td><code>local=remote</code> pairs, comma separated, for a PreFormServer that mounts your directories elsewhere, e.g. <code>~/jobs=Z:/jobs</code> for the preform-linux container.</td></tr>
 </table>
 </div>
 
@@ -158,22 +160,28 @@ For the plugin, put them in the <code>env</code> block of <code>~/.claude/settin
   "mcpServers": {
     "formlabs": {
       "command": "npx",
-      "args": ["-y", "formlabs-local-mcp@1.0.5"]
+      "args": ["-y", "formlabs-local-mcp@1.0.6"]
     }
   }
 }</code></pre>
 <p>Environment variables go in an <code>env</code> object next to <code>args</code>. For Claude Code without the plugin:</p>
-<pre><code>claude mcp add --scope user formlabs -- npx -y formlabs-local-mcp@1.0.5</code></pre>
-<p>Then ask for <code>health_check</code>; if PreFormServer is missing the server offers to install it. From a shell: <code>npx -y formlabs-local-mcp@1.0.5 install-preform</code>, and <code>doctor</code> instead of <code>install-preform</code> shows what is installed and whether Formlabs has a newer release. The package is published on <a href="https://www.npmjs.com/package/formlabs-local-mcp">npm</a> with signed build provenance from GitHub Actions.</p>
+<pre><code>claude mcp add --scope user formlabs -- npx -y formlabs-local-mcp@1.0.6</code></pre>
+<p>Then ask for <code>health_check</code>; if PreFormServer is missing the server offers to install it. From a shell: <code>npx -y formlabs-local-mcp@1.0.6 install-preform</code>, and <code>doctor</code> instead of <code>install-preform</code> shows what is installed and whether Formlabs has a newer release. The package is published on <a href="https://www.npmjs.com/package/formlabs-local-mcp">npm</a> with signed build provenance from GitHub Actions.</p>
 
 <h2 id="linux">Linux and remote</h2>
-<p>Formlabs ships PreFormServer for macOS and Windows only, so on Linux the server has to reach a PreFormServer somewhere else, or run the Windows build under Wine.</p>
-<h3>Remote mode (recommended)</h3>
+<p>Formlabs ships PreFormServer for macOS and Windows only. On Linux the server can talk to PreFormServer running under Wine, in a container or on the same machine, or drive one on a Mac or Windows box over ssh.</p>
+<h3>Container: preform-linux (recommended for servers and automation)</h3>
+<p><a href="https://github.com/mkebiclioglu/preform-linux">preform-linux</a> packages the Windows build of PreFormServer with Wine and Xvfb: headless, no GPU, signature-checked at first start, printers reached by IP address or through a Formlabs account. Point the MCP server at it and tell it how the container sees your files:</p>
+<pre><code>PREFORM_SERVER_URL=http://127.0.0.1:44388
+PREFORM_SERVER_PATH_STYLE=wine
+PREFORM_PATH_MAP=/home/me/preform-linux/jobs=Z:/jobs</code></pre>
+<p>Files under the mapped directory are sent as <code>Z:/jobs/...</code>; every tool then works as on macOS. LAN discovery by mDNS does not work under Wine, so give <code>discover_devices</code> and <code>print_to_printer</code> the printer's IP, or <code>login</code> for Fleet Control and Dashboard printers.</p>
+<h3>Wine on this machine</h3>
+<p><code>install-preform</code> fetches the Windows build and verifies its Authenticode signature with <code>osslsigncode</code>; the server starts it through <code>wine</code> with headless defaults and writes file paths as <code>Z:/home/me/...</code> automatically. Needs Wine <strong>11.5 or newer</strong> from <a href="https://wiki.winehq.org/Ubuntu">WineHQ</a> (distro Wine 9.0 cannot load PreFormServer 3.63.0) and a display: <code>PREFORM_LAUNCHER="xvfb-run -a wine"</code> on a headless box. A weekly <a href="https://github.com/mkebiclioglu/formlabs-local-mcp/actions/workflows/integration.yml">CI job</a> runs the smoke test this way.</p>
+<h3>Remote mode</h3>
 <p>Run PreFormServer on any Mac or Windows machine on your network and let the MCP server on Linux drive it over ssh:</p>
 <pre><code>PREFORM_REMOTE_HOST=me@studio-mac.local</code></pre>
 <p>One ssh session, keys only, forwards a loopback port and starts PreFormServer on the remote machine so it stops when the MCP server does. Input files are copied over with <code>scp</code> into a per-session staging folder under the remote user's home; <code>.form</code> files and screenshots are copied back. The remote host needs PreFormServer installed (run <code>install-preform</code> there) and a POSIX shell over ssh. For a Windows remote host set <code>PREFORM_REMOTE_SPAWN=0</code> and start PreFormServer yourself. Remote mode also works from a Mac to another Mac, for instance a Mac mini next to the printers.</p>
-<h3>Wine: not yet</h3>
-<p>We tried. <code>install-preform</code> on Linux fetches the Windows build and verifies its Authenticode signature with <code>osslsigncode</code> (that part works), and the server launches it with <code>wine</code>. But PreFormServer calls <code>DnsStartMulticastQuery</code> for mDNS printer discovery right after opening its HTTP port, and neither Ubuntu's Wine 9.0 nor WineHQ stable 11.0 implements it, so the process aborts before it is ready. A weekly <a href="https://github.com/mkebiclioglu/formlabs-local-mcp/actions/workflows/integration.yml">CI job</a> keeps trying; when Wine gains that call the job turns green and this note goes away. Until then, remote mode is the Linux path.</p>
 
 <h2 id="security">Security</h2>
 <p>PreFormServer is a plain-HTTP server with no authentication that reads and writes files as you. The MCP server is built to keep that surface small:</p>
