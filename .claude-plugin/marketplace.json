@@ -11,7 +11,7 @@
       "name": "formlabs",
       "displayName": "Formlabs",
       "description": "Turn STL/OBJ files into supported, validated Formlabs print jobs and send them to your printer. Bundles the formlabs-local-mcp server (installs PreFormServer for you) and print-prep skills.",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "source": "./plugins/formlabs",
       "author": {
         "name": "Mustafa Ebiclioglu"
