@@ -25,7 +25,10 @@ Ask for all missing items in ONE question:
 3. **Target printer.** Call `discover_devices` (10 s) then `list_devices` and
    show what was found: product name, id, status, tank material. The `printer`
    argument is the device id (serial name like `Form4-ABC123`) or its IP. If the
-   tank material differs from the chosen material, warn the user.
+   tank material differs from the chosen material, warn the user. Entries with
+   `connection_type: VIRTUAL` (ids like `Form 4`, `Fuse 1+`) are PreFormServer's
+   built-in virtual printers: use one when the user wants a dry run or has no
+   printer yet. It accepts the job and returns a `job_id`; nothing prints.
 4. **Job name.** Default: the first model's basename.
 
 Remote printing through Fleet Control or Dashboard needs `login` first, which
