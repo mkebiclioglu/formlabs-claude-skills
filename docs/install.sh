@@ -12,7 +12,7 @@
 
 set -eu
 
-PACKAGE="formlabs-local-mcp@1.0.8"
+PACKAGE="formlabs-local-mcp@1.0.10"
 
 say() { printf '%s\n' "$*"; }
 fail() { say "error: $*" >&2; exit 1; }
