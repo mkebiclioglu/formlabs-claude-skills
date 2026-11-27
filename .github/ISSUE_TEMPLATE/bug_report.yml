@@ -30,6 +30,6 @@ body:
     attributes:
       label: Claude Code version
       description: From `claude --version`.
-      placeholder: "2.1.9"
+      placeholder: "2.1.10"
     validations:
       required: true
